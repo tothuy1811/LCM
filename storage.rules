@@ -1,0 +1,14 @@
+rules_version = '2';
+
+// Default-deny: all uploads/downloads currently go through server actions
+// using the Admin SDK (src/server/documents-actions.ts), which bypasses
+// these rules entirely. They exist to document intent and to fail closed
+// if client-direct Storage access is ever added — at that point, replace
+// the blanket deny below with `allow read, write: if request.auth != null;`.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

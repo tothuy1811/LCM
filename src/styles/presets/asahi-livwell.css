@@ -1,0 +1,90 @@
+/*
+label: Asahi Livwell
+value: asahi-livwell
+Colors sourced from https://home.asahilivwell.com/ (brand navy #002364, accent pink #f1005f)
+*/
+
+:root[data-theme-preset="asahi-livwell"] {
+    --radius: 0.375rem;
+    --background: oklch(1.000 0.000 89.9);
+    --foreground: oklch(0.145 0.000 89.9);
+    --card: oklch(1.000 0.000 89.9);
+    --card-foreground: oklch(0.145 0.000 89.9);
+    --popover: oklch(1.000 0.000 89.9);
+    --popover-foreground: oklch(0.145 0.000 89.9);
+    --primary: oklch(0.283 0.121 260.9);
+    --primary-foreground: oklch(1.000 0.000 89.9);
+    --secondary: oklch(0.969 0.007 260.7);
+    --secondary-foreground: oklch(0.283 0.121 260.9);
+    --muted: oklch(0.968 0.007 247.9);
+    --muted-foreground: oklch(0.446 0.037 257.3);
+    --accent: oklch(0.612 0.245 10.8);
+    --accent-foreground: oklch(1.000 0.000 89.9);
+    --destructive: oklch(0.647 0.229 22.5);
+    --border: oklch(0.869 0.020 252.9);
+    --input: oklch(0.869 0.020 252.9);
+    --ring: oklch(0.610 0.211 261.3);
+    --chart-1: oklch(0.551 0.248 262.1);
+    --chart-2: oklch(0.612 0.245 10.8);
+    --chart-3: oklch(0.732 0.104 228.2);
+    --chart-4: oklch(0.897 0.165 95.2);
+    --chart-5: oklch(0.425 0.195 261.9);
+    --sidebar: oklch(0.283 0.121 260.9);
+    --sidebar-foreground: oklch(1.000 0.000 89.9);
+    --sidebar-primary: oklch(0.612 0.245 10.8);
+    --sidebar-primary-foreground: oklch(1.000 0.000 89.9);
+    --sidebar-accent: oklch(0.355 0.160 261.6);
+    --sidebar-accent-foreground: oklch(1.000 0.000 89.9);
+    --sidebar-border: oklch(1.000 0.000 89.9 / 10%);
+    --sidebar-ring: oklch(0.610 0.211 261.3);
+    --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow-md: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 2px 4px -1px hsl(0 0% 0% / 0.10);
+    --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
+    --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
+    --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.25);
+}
+
+.dark:root[data-theme-preset="asahi-livwell"] {
+    --background: oklch(0.214 0.084 259.3);
+    --foreground: oklch(0.985 0.000 89.9);
+    --card: oklch(0.271 0.090 260.4);
+    --card-foreground: oklch(0.985 0.000 89.9);
+    --popover: oklch(0.271 0.090 260.4);
+    --popover-foreground: oklch(0.985 0.000 89.9);
+    --primary: oklch(0.610 0.211 261.3);
+    --primary-foreground: oklch(0.214 0.084 259.3);
+    --secondary: oklch(0.303 0.090 261.0);
+    --secondary-foreground: oklch(0.985 0.000 89.9);
+    --muted: oklch(0.303 0.090 261.0);
+    --muted-foreground: oklch(0.720 0.030 260.0);
+    --accent: oklch(0.612 0.245 10.8);
+    --accent-foreground: oklch(1.000 0.000 89.9);
+    --destructive: oklch(0.677 0.229 22.5);
+    --border: oklch(1.000 0.000 89.9 / 12%);
+    --input: oklch(1.000 0.000 89.9 / 15%);
+    --ring: oklch(0.679 0.169 261.8);
+    --chart-1: oklch(0.679 0.169 261.8);
+    --chart-2: oklch(0.687 0.220 1.1);
+    --chart-3: oklch(0.732 0.104 228.2);
+    --chart-4: oklch(0.897 0.165 95.2);
+    --chart-5: oklch(0.756 0.125 262.2);
+    --sidebar: oklch(0.180 0.070 260.0);
+    --sidebar-foreground: oklch(0.985 0.000 89.9);
+    --sidebar-primary: oklch(0.612 0.245 10.8);
+    --sidebar-primary-foreground: oklch(1.000 0.000 89.9);
+    --sidebar-accent: oklch(0.303 0.090 261.0);
+    --sidebar-accent-foreground: oklch(0.985 0.000 89.9);
+    --sidebar-border: oklch(1.000 0.000 89.9 / 10%);
+    --sidebar-ring: oklch(0.679 0.169 261.8);
+    --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow-md: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 2px 4px -1px hsl(0 0% 0% / 0.10);
+    --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
+    --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
+    --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.25);
+}

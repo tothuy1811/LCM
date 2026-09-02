@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath // \"\"' | { read -r f; echo \"$f\" | grep -qE 'app/.+/page\\.tsx$' && echo \"$f\" | grep -qv 'page\\.test\\.tsx' && TEST=\"${f%page.tsx}page.test.tsx\" && printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"page.tsx edited (%s) — update the co-located unit test at %s to reflect the new changes.\"}}\\n' \"$f\" \"$TEST\" || true; } 2>/dev/null || true",
+            "statusMessage": "Checking if page test needs updating..."
+          }
+        ]
+      }
+    ]
+  }
+}
