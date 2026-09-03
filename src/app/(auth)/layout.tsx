@@ -27,7 +27,7 @@ export default async function AuthLayout({
             priority
           />
 
-          <div className="max-w-md space-y-3">
+          <div className="max-w-md -translate-y-10 space-y-3">
             <Image
               src="/brand/images/pink_circle.svg"
               alt=""
