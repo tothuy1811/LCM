@@ -33,11 +33,27 @@ export type DatePickerProps = {
 function formatDate(date: Date | undefined) {
   if (!date) return "";
 
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+function parseDate(value: string): Date | undefined {
+  const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!match) return undefined;
+
+  const [, day, month, year] = match;
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  if (
+    date.getFullYear() !== Number(year) ||
+    date.getMonth() !== Number(month) - 1 ||
+    date.getDate() !== Number(day)
+  ) {
+    return undefined;
+  }
+
+  return date;
 }
 
 function isValidDate(date: Date | undefined) {
@@ -55,7 +71,7 @@ export function DatePicker({
   timeLabel = "Time",
   initialDate,
   initialTime = "10:30:00",
-  placeholder = "Select date",
+  placeholder = "DD/MM/YYYY",
   className,
   dateFieldClassName,
   timeFieldClassName,
@@ -138,8 +154,8 @@ export function DatePicker({
                   return;
                 }
 
-                const parsedDate = new Date(inputValue);
-                if (isValidDate(parsedDate)) {
+                const parsedDate = parseDate(inputValue);
+                if (parsedDate && isValidDate(parsedDate)) {
                   setDate(parsedDate);
                   setMonth(parsedDate);
                   onChange?.(parsedDate);
