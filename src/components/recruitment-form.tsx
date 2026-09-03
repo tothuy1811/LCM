@@ -37,6 +37,10 @@ export function RecruitmentForm({ managers }: { managers: TManagerOption[] }) {
   } = useForm<RecruitmentValues>({
     resolver: zodResolver(schema),
     defaultValues: {
+      dateOfBirth: "",
+      idIssueDate: "",
+      taxCodeIssueDate: "",
+      signDate: "",
       isCivilServant: "no",
       participatingProgram: "no",
       isRehire: "no",
