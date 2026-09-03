@@ -100,7 +100,7 @@ export const en: typeof vi = {
         password: "Password must be at least 8 characters",
       },
       hero: {
-        heading: "A new dawn begins",
+        heading: "RECRUITMENT INFORMATION MANAGEMENT",
         subtitle:
           "Sign in to manage compensation and benefits for the Asahi Livwell team.",
         quote:
