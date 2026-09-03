@@ -71,7 +71,7 @@ export function DatePicker({
   timeLabel = "Time",
   initialDate,
   initialTime = "10:30:00",
-  placeholder = "DD/MM/YYYY",
+  placeholder = "Ngày/Tháng/Năm",
   className,
   dateFieldClassName,
   timeFieldClassName,
