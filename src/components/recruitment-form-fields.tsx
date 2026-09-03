@@ -2046,16 +2046,16 @@ export function RecruitmentFormFields({
           <p className="text-muted-foreground text-sm">
             {t.recruitmentForm.section10.templatesIntro}
           </p>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          <ul className="mt-3 grid min-w-0 gap-2 sm:grid-cols-2">
             {TEMPLATE_DOCUMENTS.map(doc => (
-              <li key={doc.file}>
+              <li key={doc.file} className="min-w-0">
                 <a
                   href={`/templates/${doc.file}`}
                   download
-                  className="border-input bg-background hover:bg-muted/50 flex items-center gap-2 rounded-md border px-3 py-2 text-sm"
+                  className="border-input bg-background hover:bg-muted/50 flex min-w-0 items-center gap-2 rounded-md border px-3 py-2 text-sm"
                 >
                   <IconDownload className="text-muted-foreground size-4 shrink-0" />
-                  <span className="flex-1 truncate">{doc.label}</span>
+                  <span className="min-w-0 flex-1 truncate">{doc.label}</span>
                 </a>
               </li>
             ))}
