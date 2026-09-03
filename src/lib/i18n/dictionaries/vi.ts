@@ -398,7 +398,7 @@ export const vi = {
         `Công ty ${n}${n === 1 ? " (gần nhất)" : ""}`,
       fromDate: "Từ (tháng/năm)",
       toDate: "Đến (tháng/năm)",
-      monthYearPlaceholder: "mm/yyyy",
+      monthYearPlaceholder: "Tháng/Năm",
       jobTitle: "Chức danh",
       companyNameAddress: "Tên & địa chỉ đơn vị",
       addCompany: "Thêm công ty",
