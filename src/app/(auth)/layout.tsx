@@ -35,12 +35,9 @@ export default async function AuthLayout({
               height={28}
               className="h-7 w-11"
             />
-            <h2 className="text-3xl leading-tight font-semibold text-balance">
+            <h2 className="text-3xl leading-tight font-semibold whitespace-pre-line">
               {dict.auth.login.hero.heading}
             </h2>
-            <p className="text-sm text-white/70">
-              {dict.auth.login.hero.subtitle}
-            </p>
           </div>
 
           <div className="overflow-hidden whitespace-nowrap">

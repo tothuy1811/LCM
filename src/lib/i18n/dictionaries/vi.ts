@@ -98,7 +98,7 @@ export const vi = {
         password: "Mật khẩu phải có ít nhất 8 ký tự",
       },
       hero: {
-        heading: "TRANG QUẢN LÝ THÔNG TIN TUYỂN DỤNG",
+        heading: "TRANG QUẢN LÝ THÔNG TIN\nTUYỂN DỤNG",
         subtitle:
           "Đăng nhập để quản lý lương thưởng và phúc lợi cho đội ngũ Asahi Livwell.",
         quote: '"Hành trình vạn dặm bắt đầu từ một bước chân." — Lão Tử',
