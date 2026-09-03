@@ -124,9 +124,26 @@ export async function listRecruitmentSubmissions(): Promise<
 > {
   const check = await requireRecruitmentAccess();
   if (!check.ok) return check;
-  const { dict } = check;
+  const { dict, user } = check;
 
   try {
+    if (user.role === "ad") {
+      // Equality filter on managerUid + orderBy submittedAt would need a
+      // composite Firestore index, so sort/limit client-side instead — each
+      // AD's own submission count is small enough for this to be cheap.
+      const snapshot = await adminDb
+        .collection(COLLECTION)
+        .where("managerUid", "==", user.uid)
+        .get();
+
+      const submissions = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }) as TRecruitmentSubmission)
+        .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))
+        .slice(0, 200);
+
+      return { ok: true, data: submissions };
+    }
+
     const snapshot = await adminDb
       .collection(COLLECTION)
       .orderBy("submittedAt", "desc")
@@ -148,17 +165,21 @@ export async function getRecruitmentSubmission(
 ): Promise<ActionResult<TRecruitmentSubmission>> {
   const check = await requireRecruitmentAccess();
   if (!check.ok) return check;
-  const { dict } = check;
+  const { dict, user } = check;
 
   try {
     const doc = await adminDb.collection(COLLECTION).doc(id).get();
     if (!doc.exists) {
       return { ok: false, error: dict.errors.recruitment.notFound };
     }
+    const data = doc.data();
+    if (user.role === "ad" && data?.managerUid !== user.uid) {
+      return { ok: false, error: dict.errors.forbidden };
+    }
 
     return {
       ok: true,
-      data: { id: doc.id, ...doc.data() } as TRecruitmentSubmission,
+      data: { id: doc.id, ...data } as TRecruitmentSubmission,
     };
   } catch {
     return { ok: false, error: dict.errors.recruitment.loadFailed };
@@ -171,7 +192,7 @@ export async function updateRecruitmentSubmission(
 ): Promise<ActionResult> {
   const check = await requireRecruitmentAccess();
   if (!check.ok) return check;
-  const { dict } = check;
+  const { dict, user } = check;
 
   const schema = buildRecruitmentSchema(dict.recruitmentForm.validation);
   const parsed = schema.safeParse(values);
@@ -180,7 +201,14 @@ export async function updateRecruitmentSubmission(
   }
 
   try {
-    await adminDb.collection(COLLECTION).doc(id).update(parsed.data);
+    const ref = adminDb.collection(COLLECTION).doc(id);
+    if (user.role === "ad") {
+      const doc = await ref.get();
+      if (doc.data()?.managerUid !== user.uid) {
+        return { ok: false, error: dict.errors.forbidden };
+      }
+    }
+    await ref.update(parsed.data);
     return { ok: true, data: null };
   } catch {
     return { ok: false, error: dict.errors.recruitment.updateFailed };
@@ -215,14 +243,21 @@ export async function updateRecruitmentSubmissionStatus(
 ): Promise<ActionResult> {
   const check = await requireRecruitmentAccess();
   if (!check.ok) return check;
-  const { dict } = check;
+  const { dict, user } = check;
 
   if (!STATUS_VALUES.includes(status as TRecruitmentStatus)) {
     return { ok: false, error: dict.errors.recruitment.invalidStatus };
   }
 
   try {
-    await adminDb.collection(COLLECTION).doc(id).update({ status });
+    const ref = adminDb.collection(COLLECTION).doc(id);
+    if (user.role === "ad") {
+      const doc = await ref.get();
+      if (doc.data()?.managerUid !== user.uid) {
+        return { ok: false, error: dict.errors.forbidden };
+      }
+    }
+    await ref.update({ status });
     return { ok: true, data: null };
   } catch {
     return { ok: false, error: dict.errors.recruitment.statusUpdateFailed };
@@ -234,11 +269,14 @@ export async function deleteRecruitmentSubmission(
 ): Promise<ActionResult> {
   const check = await requireRecruitmentAccess();
   if (!check.ok) return check;
-  const { dict } = check;
+  const { dict, user } = check;
 
   try {
     const ref = adminDb.collection(COLLECTION).doc(id);
     const doc = await ref.get();
+    if (user.role === "ad" && doc.data()?.managerUid !== user.uid) {
+      return { ok: false, error: dict.errors.forbidden };
+    }
     const attachments =
       (doc.data()?.attachments as TRecruitmentSubmission["attachments"]) ?? [];
 
