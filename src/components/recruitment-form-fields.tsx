@@ -30,6 +30,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
+import { DatePicker } from "@/components/ui/date-picker/date-picker";
 import {
   Field,
   FieldDescription,
@@ -58,6 +59,20 @@ import {
 import type { TManagerOption } from "@/server/user-actions";
 import type { RecruitmentValues } from "@/lib/validations/recruitment";
 import type { Language } from "@/types/preferences/language";
+
+function parseIsoDate(value?: string): Date | undefined {
+  if (!value) return undefined;
+  const parsed = new Date(`${value}T00:00:00`);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+}
+
+function toIsoDate(date: Date | undefined): string {
+  if (!date) return "";
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 function SectionCard({
   number,
@@ -627,13 +642,18 @@ export function RecruitmentFormFields({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field data-invalid={!!errors.dateOfBirth}>
-              <FieldLabel htmlFor="dateOfBirth">
-                {t.recruitmentForm.section1.dateOfBirth}
-              </FieldLabel>
-              <Input
-                id="dateOfBirth"
-                type="date"
-                {...register("dateOfBirth")}
+              <Controller
+                control={control}
+                name="dateOfBirth"
+                render={({ field }) => (
+                  <DatePicker
+                    id="dateOfBirth"
+                    label={t.recruitmentForm.section1.dateOfBirth}
+                    className="!mx-0 !max-w-none"
+                    initialDate={parseIsoDate(field.value)}
+                    onChange={date => field.onChange(toIsoDate(date))}
+                  />
+                )}
               />
               <FieldError
                 errors={errors.dateOfBirth ? [errors.dateOfBirth] : undefined}
@@ -656,13 +676,18 @@ export function RecruitmentFormFields({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field>
-              <FieldLabel htmlFor="idIssueDate">
-                {t.recruitmentForm.section1.idIssueDate}
-              </FieldLabel>
-              <Input
-                id="idIssueDate"
-                type="date"
-                {...register("idIssueDate")}
+              <Controller
+                control={control}
+                name="idIssueDate"
+                render={({ field }) => (
+                  <DatePicker
+                    id="idIssueDate"
+                    label={t.recruitmentForm.section1.idIssueDate}
+                    className="!mx-0 !max-w-none"
+                    initialDate={parseIsoDate(field.value)}
+                    onChange={date => field.onChange(toIsoDate(date))}
+                  />
+                )}
               />
             </Field>
             <Field>
@@ -720,13 +745,18 @@ export function RecruitmentFormFields({
               <Input id="taxCode" {...register("taxCode")} />
             </Field>
             <Field>
-              <FieldLabel htmlFor="taxCodeIssueDate">
-                {t.recruitmentForm.section1.taxCodeIssueDate}
-              </FieldLabel>
-              <Input
-                id="taxCodeIssueDate"
-                type="date"
-                {...register("taxCodeIssueDate")}
+              <Controller
+                control={control}
+                name="taxCodeIssueDate"
+                render={({ field }) => (
+                  <DatePicker
+                    id="taxCodeIssueDate"
+                    label={t.recruitmentForm.section1.taxCodeIssueDate}
+                    className="!mx-0 !max-w-none"
+                    initialDate={parseIsoDate(field.value)}
+                    onChange={date => field.onChange(toIsoDate(date))}
+                  />
+                )}
               />
             </Field>
             <Field>
@@ -2268,10 +2298,19 @@ export function RecruitmentFormFields({
           />
 
           <Field data-invalid={!!errors.signDate}>
-            <FieldLabel htmlFor="signDate">
-              {t.recruitmentForm.section11.signDateLabel}
-            </FieldLabel>
-            <Input id="signDate" type="date" {...register("signDate")} />
+            <Controller
+              control={control}
+              name="signDate"
+              render={({ field }) => (
+                <DatePicker
+                  id="signDate"
+                  label={t.recruitmentForm.section11.signDateLabel}
+                  className="!mx-0 !max-w-none"
+                  initialDate={parseIsoDate(field.value)}
+                  onChange={date => field.onChange(toIsoDate(date))}
+                />
+              )}
+            />
             <FieldError
               errors={errors.signDate ? [errors.signDate] : undefined}
             />
