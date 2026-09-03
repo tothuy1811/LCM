@@ -231,6 +231,9 @@ export const vi = {
         ads: "Quảng cáo",
         fanpage: "Fanpage",
         website: "Website tuyển dụng",
+        friend: "Bạn bè",
+        colleague: "Đồng nghiệp",
+        referral: "Giới thiệu",
         other: "Khác",
       },
       agencyType: {
@@ -271,6 +274,13 @@ export const vi = {
         caoDang: "Cao Đẳng",
         daiHoc: "Đại Học",
         sauDaiHoc: "Sau Đại Học",
+        other: "Khác",
+      },
+      civilServantType: {
+        teacher: "Giáo viên",
+        police: "Công an",
+        doctor: "Bác sĩ",
+        other: "Khác",
       },
       relationship: {
         cha: "Cha",
@@ -287,17 +297,26 @@ export const vi = {
         sales_skills: "Khóa xây dựng kỹ năng bán hàng (3 buổi trong 3 tháng)",
         sales_management: "Hoạt động quản lý bán hàng định kỳ (hàng tuần)",
       },
+      q1: {
+        family: "Có, người thân trong gia đình",
+        friend_colleague: "Có, bạn bè/đồng nghiệp",
+        heard_no_detail: "Có nghe nói nhưng không rõ chi tiết",
+        none: "Chưa từng thấy/nghe",
+      },
       q2: {
         financial_protection:
           "Là công cụ bảo vệ tài chính cần thiết cho gia đình",
         savings_investment: "Là một hình thức tiết kiệm, đầu tư dài hạn",
-        important_not_explored: "Quan trọng nhưng bản thân chưa tìm hiểu kỹ",
+        important_not_explored:
+          "Là khoản dự phòng, khoản thu nhập thay thế khi mất khả năng tạo ra thu nhập",
         other: "Khác",
       },
       q3: {
-        supportive: "Ủng hộ, khuyến khích",
-        surprised_respectful: "Ngạc nhiên nhưng tôn trọng quyết định",
-        proud: "Tự hào, xem đây là cơ hội tốt",
+        main_earner: "Người là trụ cột thu nhập chính trong gia đình",
+        young_children: "Người có con nhỏ, đang đi học",
+        debt_loan: "Người đang có khoản vay, nợ tài chính",
+        retirement_age: "Người lớn tuổi, cần chuẩn bị hưu trí",
+        everyone: "Tất cả mọi người",
         other: "Khác",
       },
       q4: {
@@ -331,16 +350,16 @@ export const vi = {
       maritalStatusLabel: "Tình trạng hôn nhân *",
       maritalStatusPlaceholder: "Chọn tình trạng hôn nhân",
       taxCode: "Mã số thuế",
-      taxCodeIssueDate: "Ngày cấp MST",
-      taxCodeIssuePlace: "Nơi cấp MST",
-      averageMonthlyIncomeLabel: "Thu nhập bình quân/tháng *",
+      averageMonthlyIncomeLabel: "Thu nhập bình quân 6 tháng gần nhất *",
       averageMonthlyIncomePlaceholder: "Chọn mức thu nhập",
       potentialCustomers: "Số khách hàng tiềm năng *",
       educationLevelLabel: "Trình độ học vấn *",
       educationLevelPlaceholder: "Chọn trình độ học vấn",
+      specifyOther: "Vui lòng ghi rõ",
       civilServantLabel: "Công chức/viên chức",
       civilServantNo: "Không",
       civilServantYes: "Có",
+      civilServantTypeLabel: "Loại hình công chức/viên chức",
       accountHolderNameLabel: "Chủ tài khoản ngân hàng (trùng tên CCCD) *",
       accountHolderNamePlaceholder: "Tự động lấy theo Họ và tên",
       bankAccountNumberLabel: "Số tài khoản (không phải số thẻ ATM) *",
@@ -363,10 +382,14 @@ export const vi = {
       agencyTypePlaceholder: "Chọn loại hình",
       positionLabel: "Vị trí ứng tuyển *",
       specifyOther: "Vui lòng ghi rõ",
-      programLabel: "Chương trình tham gia",
+      programLabel: "Chương trình tham gia (MDRT, Thu hút nhân tài ...)",
       no: "Không",
       yes: "Có",
       rehireLabel: "Có phải tái tuyển dụng không?",
+      rehireFromDateLabel: "Từ (tháng/năm)",
+      rehireToDateLabel: "Đến (tháng/năm)",
+      rehireChannelLabel: "Kênh",
+      rehireChannelPlaceholder: "Chọn kênh",
       recruiterCode: "Mã số người tuyển dụng",
       recruiterName: "Họ tên người tuyển dụng *",
       referrerCode: "Mã số người giới thiệu (nếu có)",
@@ -438,17 +461,17 @@ export const vi = {
     section9: {
       title: "Vui lòng trả lời các câu hỏi sau",
       q1Label:
-        "1) Trong cuộc sống, anh/chị đã từng thấy người thân hoặc người xung quanh nhận được quyền lợi từ bảo hiểm nhân thọ chưa?",
+        "1) Trong cuộc sống, anh/chị đã từng thấy người thân hoặc người xung quanh bị tác động, ảnh hưởng bởi rủi ro không lường trước chưa?",
       q2Label:
         "2) Anh/chị nhìn nhận như thế nào về bảo hiểm nhân thọ? (có thể chọn nhiều đáp án)",
       q3Label:
-        "3) Người thân, bạn bè sẽ nói gì nếu anh/chị trở thành tư vấn viên bảo hiểm nhân thọ? (có thể chọn nhiều đáp án)",
+        "3) Anh chị nghĩ đối tượng nào sẽ cần đến bảo hiểm nhân thọ? (có thể chọn nhiều đáp án)",
       q4Label:
-        "4) Ai là 10 người đầu tiên anh/chị sẽ trò chuyện về bảo hiểm nhân thọ?",
+        "4) Liệt kê 10 người đầu tiên mà Anh/Chị sẽ chia sẻ về BHNT sau khi trở thành Đại lý?",
       q5Label:
-        "5) Anh/chị có sẵn sàng tham gia các khóa đào tạo sau để phát triển bản thân? *",
+        "5) Anh chị Cam Kết tham gia các khóa học-Đào tạo nào dưới đây? *",
       q6Label:
-        "6) Anh/chị mong Asahi hỗ trợ gì để thành công, tăng thu nhập, có cơ hội thăng tiến, nâng cao kỹ năng và kiến thức? (có thể chọn nhiều đáp án)",
+        "6) Anh/chị mong Asahi hỗ trợ gì để thành công? (có thể chọn nhiều đáp án)",
       selectPlaceholder: "Chọn một đáp án",
       specifyOther: "Vui lòng ghi rõ",
       no: "Không",

@@ -24,18 +24,21 @@ export function buildRecruitmentSchema(
     managerName: z.string().min(1, t.managerRequired),
 
     taxCode: z.string().optional(),
-    taxCodeIssueDate: z.string().optional(),
-    taxCodeIssuePlace: z.string().optional(),
     averageMonthlyIncome: z.enum(
       ["under5m", "from5to10m", "from10to20m", "from20to50m", "over50m"],
       { error: t.averageMonthlyIncomeRequired }
     ),
     potentialCustomers: z.string().min(1, t.potentialCustomersRequired),
     educationLevel: z.enum(
-      ["thpt", "trungCap", "caoDang", "daiHoc", "sauDaiHoc"],
+      ["thpt", "trungCap", "caoDang", "daiHoc", "sauDaiHoc", "other"],
       { error: t.educationLevelRequired }
     ),
+    educationLevelOther: z.string().optional(),
     isCivilServant: z.enum(["no", "yes"]).optional(),
+    civilServantType: z
+      .array(z.enum(["teacher", "police", "doctor", "other"]))
+      .optional(),
+    civilServantTypeOther: z.string().optional(),
 
     accountHolderName: z.string().min(1, t.accountHolderNameRequired),
     bankAccountNumber: z.string().min(1, t.bankAccountNumberRequired),
@@ -45,6 +48,7 @@ export function buildRecruitmentSchema(
     channel: z.enum(["agency", "other"], {
       error: t.channelRequired,
     }),
+    channelOther: z.string().optional(),
     agencyType: z.enum(["full_time", "part_time"]).optional(),
 
     positionApplied: z.enum(
@@ -68,6 +72,10 @@ export function buildRecruitmentSchema(
       .optional(),
 
     isRehire: z.enum(["no", "yes"]).optional(),
+    rehireFromDate: z.string().optional(),
+    rehireToDate: z.string().optional(),
+    rehireChannel: z.enum(["agency", "other"]).optional(),
+    rehireChannelOther: z.string().optional(),
 
     recruiterCode: z.string().optional(),
     recruiterName: z.string().min(1, t.recruiterNameRequired),
@@ -96,7 +104,17 @@ export function buildRecruitmentSchema(
       .optional(),
 
     referralChannel: z
-      .array(z.enum(["ads", "fanpage", "website", "other"]))
+      .array(
+        z.enum([
+          "ads",
+          "fanpage",
+          "website",
+          "friend",
+          "colleague",
+          "referral",
+          "other",
+        ])
+      )
       .optional(),
     referralOther: z.string().optional(),
 
@@ -120,7 +138,9 @@ export function buildRecruitmentSchema(
       )
       .optional(),
 
-    q1Experience: z.enum(["no", "yes"], { error: t.answerRequired }),
+    q1Experience: z
+      .array(z.enum(["family", "friend_colleague", "heard_no_detail", "none"]))
+      .min(1, t.atLeastOneAnswerRequired),
     q2View: z
       .array(
         z.enum([
@@ -130,16 +150,25 @@ export function buildRecruitmentSchema(
           "other",
         ])
       )
-      .min(1, t.atLeastOneAnswerRequired),
+      .optional(),
     q2ViewOther: z.string().optional(),
-    q3FamilyReaction: z
-      .array(z.enum(["supportive", "surprised_respectful", "proud", "other"]))
-      .min(1, t.atLeastOneAnswerRequired),
-    q3FamilyReactionOther: z.string().optional(),
-    q4FirstTenPeople: z.string().min(1, t.questionRequired),
+    q3TargetAudience: z
+      .array(
+        z.enum([
+          "main_earner",
+          "young_children",
+          "debt_loan",
+          "retirement_age",
+          "everyone",
+          "other",
+        ])
+      )
+      .optional(),
+    q3TargetAudienceOther: z.string().optional(),
+    q4FirstTenPeople: z.string().optional(),
     q5Training: z
       .array(z.enum(["lpfc", "sales_skills", "sales_management"]))
-      .min(1, t.trainingRequired),
+      .optional(),
     q6Support: z
       .array(
         z.enum([
@@ -149,7 +178,7 @@ export function buildRecruitmentSchema(
           "other",
         ])
       )
-      .min(1, t.atLeastOneAnswerRequired),
+      .optional(),
     q6SupportOther: z.string().optional(),
 
     attachments: z
@@ -191,6 +220,44 @@ export function buildRecruitmentSchema(
         path: ["confirmationConsent"],
         message: t.confirmationConsentRequired,
       });
+    }
+
+    if (!data.q1Experience.includes("none")) {
+      if (!data.q2View || data.q2View.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["q2View"],
+          message: t.atLeastOneAnswerRequired,
+        });
+      }
+      if (!data.q3TargetAudience || data.q3TargetAudience.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["q3TargetAudience"],
+          message: t.atLeastOneAnswerRequired,
+        });
+      }
+      if (!data.q4FirstTenPeople) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["q4FirstTenPeople"],
+          message: t.questionRequired,
+        });
+      }
+      if (!data.q5Training || data.q5Training.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["q5Training"],
+          message: t.trainingRequired,
+        });
+      }
+      if (!data.q6Support || data.q6Support.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["q6Support"],
+          message: t.atLeastOneAnswerRequired,
+        });
+      }
     }
 
     if (data.hasPepRelationship !== "yes") return;

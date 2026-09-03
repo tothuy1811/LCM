@@ -26,20 +26,46 @@ export type DatePickerProps = {
   captionLayout?: "label" | "dropdown" | "dropdown-months" | "dropdown-years";
   closeOnSelect?: boolean;
   timeStep?: number;
+  /** "month" displays/parses the value as MM/YYYY, dropping the day. */
+  granularity?: "day" | "month";
   onChange?: (date: Date | undefined) => void;
   onTimeChange?: (time: string) => void;
 };
 
-function formatDate(date: Date | undefined) {
+function formatDate(
+  date: Date | undefined,
+  granularity: "day" | "month" = "day"
+) {
   if (!date) return "";
 
-  const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
+  if (granularity === "month") return `${month}/${year}`;
+
+  const day = String(date.getDate()).padStart(2, "0");
   return `${day}/${month}/${year}`;
 }
 
-function parseDate(value: string): Date | undefined {
+function parseDate(
+  value: string,
+  granularity: "day" | "month" = "day"
+): Date | undefined {
+  if (granularity === "month") {
+    const match = value.match(/^(\d{1,2})\/(\d{4})$/);
+    if (!match) return undefined;
+
+    const [, month, year] = match;
+    const monthIndex = Number(month) - 1;
+    if (monthIndex < 0 || monthIndex > 11) return undefined;
+
+    const date = new Date(Number(year), monthIndex, 1);
+    if (date.getFullYear() !== Number(year) || date.getMonth() !== monthIndex) {
+      return undefined;
+    }
+
+    return date;
+  }
+
   const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (!match) return undefined;
 
@@ -79,6 +105,7 @@ export function DatePicker({
   captionLayout = "dropdown",
   closeOnSelect = true,
   timeStep = 1,
+  granularity = "day",
   onChange,
   onTimeChange,
 }: DatePickerProps) {
@@ -87,7 +114,9 @@ export function DatePicker({
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(initialDate);
   const [month, setMonth] = React.useState<Date>(initialDate ?? new Date());
-  const [value, setValue] = React.useState(formatDate(initialDate));
+  const [value, setValue] = React.useState(
+    formatDate(initialDate, granularity)
+  );
   const [timeValue, setTimeValue] = React.useState(initialTime);
 
   const calendarId = `${id}-calendar`;
@@ -96,8 +125,8 @@ export function DatePicker({
   React.useEffect(() => {
     setDate(initialDate);
     setMonth(initialDate ?? new Date());
-    setValue(formatDate(initialDate));
-  }, [initialDate]);
+    setValue(formatDate(initialDate, granularity));
+  }, [initialDate, granularity]);
 
   React.useEffect(() => {
     setTimeValue(initialTime);
@@ -154,7 +183,7 @@ export function DatePicker({
                   return;
                 }
 
-                const parsedDate = parseDate(inputValue);
+                const parsedDate = parseDate(inputValue, granularity);
                 if (parsedDate && isValidDate(parsedDate)) {
                   setDate(parsedDate);
                   setMonth(parsedDate);
@@ -198,7 +227,7 @@ export function DatePicker({
                 onMonthChange={setMonth}
                 onSelect={nextDate => {
                   setDate(nextDate);
-                  setValue(formatDate(nextDate));
+                  setValue(formatDate(nextDate, granularity));
                   onChange?.(nextDate);
 
                   if (nextDate) {

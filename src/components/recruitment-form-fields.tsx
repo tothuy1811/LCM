@@ -74,6 +74,22 @@ function toIsoDate(date: Date | undefined): string {
   return `${year}-${month}-${day}`;
 }
 
+function parseMonthYear(value?: string): Date | undefined {
+  if (!value) return undefined;
+  const match = value.match(/^(\d{1,2})\/(\d{4})$/);
+  if (!match) return undefined;
+  const [, month, year] = match;
+  const parsed = new Date(Number(year), Number(month) - 1, 1);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+}
+
+function toMonthYear(date: Date | undefined): string {
+  if (!date) return "";
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${month}/${year}`;
+}
+
 function SectionCard({
   number,
   title,
@@ -326,6 +342,12 @@ export function RecruitmentFormFields({
     { value: "ads", label: t.recruitmentForm.options.referral.ads },
     { value: "fanpage", label: t.recruitmentForm.options.referral.fanpage },
     { value: "website", label: t.recruitmentForm.options.referral.website },
+    { value: "friend", label: t.recruitmentForm.options.referral.friend },
+    {
+      value: "colleague",
+      label: t.recruitmentForm.options.referral.colleague,
+    },
+    { value: "referral", label: t.recruitmentForm.options.referral.referral },
     { value: "other", label: t.recruitmentForm.options.referral.other },
   ] as const;
 
@@ -368,6 +390,26 @@ export function RecruitmentFormFields({
       value: "sauDaiHoc",
       label: t.recruitmentForm.options.education.sauDaiHoc,
     },
+    { value: "other", label: t.recruitmentForm.options.education.other },
+  ] as const;
+
+  const CIVIL_SERVANT_TYPE_OPTIONS = [
+    {
+      value: "teacher",
+      label: t.recruitmentForm.options.civilServantType.teacher,
+    },
+    {
+      value: "police",
+      label: t.recruitmentForm.options.civilServantType.police,
+    },
+    {
+      value: "doctor",
+      label: t.recruitmentForm.options.civilServantType.doctor,
+    },
+    {
+      value: "other",
+      label: t.recruitmentForm.options.civilServantType.other,
+    },
   ] as const;
 
   const RELATIONSHIP_OPTIONS = [
@@ -393,6 +435,19 @@ export function RecruitmentFormFields({
     },
   ] as const;
 
+  const Q1_OPTIONS = [
+    { value: "family", label: t.recruitmentForm.options.q1.family },
+    {
+      value: "friend_colleague",
+      label: t.recruitmentForm.options.q1.friend_colleague,
+    },
+    {
+      value: "heard_no_detail",
+      label: t.recruitmentForm.options.q1.heard_no_detail,
+    },
+    { value: "none", label: t.recruitmentForm.options.q1.none },
+  ] as const;
+
   const Q2_OPTIONS = [
     {
       value: "financial_protection",
@@ -410,12 +465,17 @@ export function RecruitmentFormFields({
   ] as const;
 
   const Q3_OPTIONS = [
-    { value: "supportive", label: t.recruitmentForm.options.q3.supportive },
+    { value: "main_earner", label: t.recruitmentForm.options.q3.main_earner },
     {
-      value: "surprised_respectful",
-      label: t.recruitmentForm.options.q3.surprised_respectful,
+      value: "young_children",
+      label: t.recruitmentForm.options.q3.young_children,
     },
-    { value: "proud", label: t.recruitmentForm.options.q3.proud },
+    { value: "debt_loan", label: t.recruitmentForm.options.q3.debt_loan },
+    {
+      value: "retirement_age",
+      label: t.recruitmentForm.options.q3.retirement_age,
+    },
+    { value: "everyone", label: t.recruitmentForm.options.q3.everyone },
     { value: "other", label: t.recruitmentForm.options.q3.other },
   ] as const;
 
@@ -449,13 +509,19 @@ export function RecruitmentFormFields({
 
   const channel = watch("channel");
   const positionApplied = watch("positionApplied");
+  const educationLevel = watch("educationLevel");
+  const isCivilServant = watch("isCivilServant");
+  const civilServantType = watch("civilServantType");
   const participatingProgram = watch("participatingProgram");
+  const isRehire = watch("isRehire");
+  const rehireChannel = watch("rehireChannel");
   const sameAsPermanentAddress = watch("sameAsPermanentAddress");
   const permanentProvince = watch("permanentProvince");
   const temporaryProvince = watch("temporaryProvince");
   const hasPepRelationship = watch("hasPepRelationship");
+  const q1Experience = watch("q1Experience");
   const q2View = watch("q2View");
-  const q3FamilyReaction = watch("q3FamilyReaction");
+  const q3TargetAudience = watch("q3TargetAudience");
   const q6Support = watch("q6Support");
   const attachments = watch("attachments");
   const fullName = watch("fullName");
@@ -737,38 +803,12 @@ export function RecruitmentFormFields({
             <FieldError errors={errors.email ? [errors.email] : undefined} />
           </Field>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Field>
-              <FieldLabel htmlFor="taxCode">
-                {t.recruitmentForm.section1.taxCode}
-              </FieldLabel>
-              <Input id="taxCode" {...register("taxCode")} />
-            </Field>
-            <Field>
-              <Controller
-                control={control}
-                name="taxCodeIssueDate"
-                render={({ field }) => (
-                  <DatePicker
-                    id="taxCodeIssueDate"
-                    label={t.recruitmentForm.section1.taxCodeIssueDate}
-                    className="!mx-0 !max-w-none"
-                    initialDate={parseIsoDate(field.value)}
-                    onChange={date => field.onChange(toIsoDate(date))}
-                  />
-                )}
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="taxCodeIssuePlace">
-                {t.recruitmentForm.section1.taxCodeIssuePlace}
-              </FieldLabel>
-              <Input
-                id="taxCodeIssuePlace"
-                {...register("taxCodeIssuePlace")}
-              />
-            </Field>
-          </div>
+          <Field>
+            <FieldLabel htmlFor="taxCode">
+              {t.recruitmentForm.section1.taxCode}
+            </FieldLabel>
+            <Input id="taxCode" {...register("taxCode")} />
+          </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Controller
@@ -841,6 +881,17 @@ export function RecruitmentFormFields({
               )}
             />
           </div>
+          {educationLevel === "other" && (
+            <Field>
+              <FieldLabel htmlFor="educationLevelOther">
+                {t.recruitmentForm.section1.specifyOther}
+              </FieldLabel>
+              <Input
+                id="educationLevelOther"
+                {...register("educationLevelOther")}
+              />
+            </Field>
+          )}
 
           <Controller
             control={control}
@@ -877,6 +928,58 @@ export function RecruitmentFormFields({
               </Field>
             )}
           />
+          {isCivilServant === "yes" && (
+            <>
+              <Controller
+                control={control}
+                name="civilServantType"
+                render={({ field }) => (
+                  <Field data-slot="checkbox-group">
+                    <FieldLabel>
+                      {t.recruitmentForm.section1.civilServantTypeLabel}
+                    </FieldLabel>
+                    {CIVIL_SERVANT_TYPE_OPTIONS.map(opt => (
+                      <Field
+                        key={opt.value}
+                        orientation="horizontal"
+                        className="items-start"
+                      >
+                        <Checkbox
+                          checked={(field.value ?? []).includes(opt.value)}
+                          onCheckedChange={checked => {
+                            const current = field.value ?? [];
+                            field.onChange(
+                              checked
+                                ? [...current, opt.value]
+                                : current.filter(v => v !== opt.value)
+                            );
+                          }}
+                          id={`civilServantType-${opt.value}`}
+                        />
+                        <FieldLabel
+                          htmlFor={`civilServantType-${opt.value}`}
+                          className="font-normal"
+                        >
+                          {opt.label}
+                        </FieldLabel>
+                      </Field>
+                    ))}
+                  </Field>
+                )}
+              />
+              {(civilServantType ?? []).includes("other") && (
+                <Field>
+                  <FieldLabel htmlFor="civilServantTypeOther">
+                    {t.recruitmentForm.section1.specifyOther}
+                  </FieldLabel>
+                  <Input
+                    id="civilServantTypeOther"
+                    {...register("civilServantTypeOther")}
+                  />
+                </Field>
+              )}
+            </>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field data-invalid={!!errors.accountHolderName}>
@@ -1171,6 +1274,14 @@ export function RecruitmentFormFields({
                 </Field>
               )}
             />
+            {channel === "other" && (
+              <Field>
+                <FieldLabel htmlFor="channelOther">
+                  {t.recruitmentForm.section2.specifyOther}
+                </FieldLabel>
+                <Input id="channelOther" {...register("channelOther")} />
+              </Field>
+            )}
             {channel === "agency" && (
               <Controller
                 control={control}
@@ -1357,6 +1468,82 @@ export function RecruitmentFormFields({
               </Field>
             )}
           />
+          {isRehire === "yes" && (
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Controller
+                control={control}
+                name="rehireFromDate"
+                render={({ field }) => (
+                  <DatePicker
+                    id="rehireFromDate"
+                    label={t.recruitmentForm.section2.rehireFromDateLabel}
+                    granularity="month"
+                    placeholder={
+                      t.recruitmentForm.section5.monthYearPlaceholder
+                    }
+                    className="!mx-0 !max-w-none"
+                    initialDate={parseMonthYear(field.value)}
+                    onChange={date => field.onChange(toMonthYear(date))}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="rehireToDate"
+                render={({ field }) => (
+                  <DatePicker
+                    id="rehireToDate"
+                    label={t.recruitmentForm.section2.rehireToDateLabel}
+                    granularity="month"
+                    placeholder={
+                      t.recruitmentForm.section5.monthYearPlaceholder
+                    }
+                    className="!mx-0 !max-w-none"
+                    initialDate={parseMonthYear(field.value)}
+                    onChange={date => field.onChange(toMonthYear(date))}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="rehireChannel"
+                render={({ field }) => (
+                  <Field>
+                    <FieldLabel>
+                      {t.recruitmentForm.section2.rehireChannelLabel}
+                    </FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder={
+                            t.recruitmentForm.section2.rehireChannelPlaceholder
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CHANNEL_OPTIONS.map(opt => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                )}
+              />
+              {rehireChannel === "other" && (
+                <Field>
+                  <FieldLabel htmlFor="rehireChannelOther">
+                    {t.recruitmentForm.section2.specifyOther}
+                  </FieldLabel>
+                  <Input
+                    id="rehireChannelOther"
+                    {...register("rehireChannelOther")}
+                  />
+                </Field>
+              )}
+            </div>
+          )}
 
           <FieldSeparator />
 
@@ -1463,30 +1650,40 @@ export function RecruitmentFormFields({
                 {t.recruitmentForm.section5.companyHeading(index + 1)}
               </p>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field>
-                  <FieldLabel htmlFor={`workHistory.${index}.fromDate`}>
-                    {t.recruitmentForm.section5.fromDate}
-                  </FieldLabel>
-                  <Input
-                    id={`workHistory.${index}.fromDate`}
-                    placeholder={
-                      t.recruitmentForm.section5.monthYearPlaceholder
-                    }
-                    {...register(`workHistory.${index}.fromDate` as const)}
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor={`workHistory.${index}.toDate`}>
-                    {t.recruitmentForm.section5.toDate}
-                  </FieldLabel>
-                  <Input
-                    id={`workHistory.${index}.toDate`}
-                    placeholder={
-                      t.recruitmentForm.section5.monthYearPlaceholder
-                    }
-                    {...register(`workHistory.${index}.toDate` as const)}
-                  />
-                </Field>
+                <Controller
+                  control={control}
+                  name={`workHistory.${index}.fromDate` as const}
+                  render={({ field }) => (
+                    <DatePicker
+                      id={`workHistory.${index}.fromDate`}
+                      label={t.recruitmentForm.section5.fromDate}
+                      granularity="month"
+                      placeholder={
+                        t.recruitmentForm.section5.monthYearPlaceholder
+                      }
+                      className="!mx-0 !max-w-none"
+                      initialDate={parseMonthYear(field.value)}
+                      onChange={date => field.onChange(toMonthYear(date))}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name={`workHistory.${index}.toDate` as const}
+                  render={({ field }) => (
+                    <DatePicker
+                      id={`workHistory.${index}.toDate`}
+                      label={t.recruitmentForm.section5.toDate}
+                      granularity="month"
+                      placeholder={
+                        t.recruitmentForm.section5.monthYearPlaceholder
+                      }
+                      className="!mx-0 !max-w-none"
+                      initialDate={parseMonthYear(field.value)}
+                      onChange={date => field.onChange(toMonthYear(date))}
+                    />
+                  )}
+                />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
@@ -1826,32 +2023,36 @@ export function RecruitmentFormFields({
             control={control}
             name="q1Experience"
             render={({ field }) => (
-              <Field data-invalid={!!errors.q1Experience}>
+              <Field
+                data-slot="checkbox-group"
+                data-invalid={!!errors.q1Experience}
+              >
                 <FieldLabel>{t.recruitmentForm.section9.q1Label}</FieldLabel>
-                <RadioGroup
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  className="flex gap-6"
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="no" id="q1Experience-no" />
+                {Q1_OPTIONS.map(opt => (
+                  <Field
+                    key={opt.value}
+                    orientation="horizontal"
+                    className="items-start"
+                  >
+                    <Checkbox
+                      checked={(field.value ?? []).includes(opt.value)}
+                      onCheckedChange={checked => {
+                        field.onChange(
+                          checked
+                            ? [...(field.value ?? []), opt.value]
+                            : (field.value ?? []).filter(v => v !== opt.value)
+                        );
+                      }}
+                      id={`q1Experience-${opt.value}`}
+                    />
                     <FieldLabel
-                      htmlFor="q1Experience-no"
+                      htmlFor={`q1Experience-${opt.value}`}
                       className="font-normal"
                     >
-                      {t.recruitmentForm.section9.no}
+                      {opt.label}
                     </FieldLabel>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="yes" id="q1Experience-yes" />
-                    <FieldLabel
-                      htmlFor="q1Experience-yes"
-                      className="font-normal"
-                    >
-                      {t.recruitmentForm.section9.yes}
-                    </FieldLabel>
-                  </div>
-                </RadioGroup>
+                  </Field>
+                ))}
                 <FieldError
                   errors={
                     errors.q1Experience ? [errors.q1Experience] : undefined
@@ -1861,208 +2062,238 @@ export function RecruitmentFormFields({
             )}
           />
 
-          <Controller
-            control={control}
-            name="q2View"
-            render={({ field }) => (
-              <Field data-slot="checkbox-group" data-invalid={!!errors.q2View}>
-                <FieldLabel>{t.recruitmentForm.section9.q2Label}</FieldLabel>
-                {Q2_OPTIONS.map(opt => (
+          {!(q1Experience ?? []).includes("none") && (
+            <>
+              <Controller
+                control={control}
+                name="q2View"
+                render={({ field }) => (
                   <Field
-                    key={opt.value}
-                    orientation="horizontal"
-                    className="items-start"
+                    data-slot="checkbox-group"
+                    data-invalid={!!errors.q2View}
                   >
-                    <Checkbox
-                      checked={field.value.includes(opt.value)}
-                      onCheckedChange={checked => {
-                        field.onChange(
-                          checked
-                            ? [...field.value, opt.value]
-                            : field.value.filter(v => v !== opt.value)
-                        );
-                      }}
-                      id={`q2View-${opt.value}`}
-                    />
-                    <FieldLabel
-                      htmlFor={`q2View-${opt.value}`}
-                      className="font-normal"
-                    >
-                      {opt.label}
+                    <FieldLabel>
+                      {t.recruitmentForm.section9.q2Label}
                     </FieldLabel>
+                    {Q2_OPTIONS.map(opt => (
+                      <Field
+                        key={opt.value}
+                        orientation="horizontal"
+                        className="items-start"
+                      >
+                        <Checkbox
+                          checked={(field.value ?? []).includes(opt.value)}
+                          onCheckedChange={checked => {
+                            field.onChange(
+                              checked
+                                ? [...(field.value ?? []), opt.value]
+                                : (field.value ?? []).filter(
+                                    v => v !== opt.value
+                                  )
+                            );
+                          }}
+                          id={`q2View-${opt.value}`}
+                        />
+                        <FieldLabel
+                          htmlFor={`q2View-${opt.value}`}
+                          className="font-normal"
+                        >
+                          {opt.label}
+                        </FieldLabel>
+                      </Field>
+                    ))}
+                    <FieldError
+                      errors={errors.q2View ? [errors.q2View] : undefined}
+                    />
                   </Field>
-                ))}
-                <FieldError
-                  errors={errors.q2View ? [errors.q2View] : undefined}
-                />
-              </Field>
-            )}
-          />
-          {(q2View ?? []).includes("other") && (
-            <Field>
-              <FieldLabel htmlFor="q2ViewOther">
-                {t.recruitmentForm.section9.specifyOther}
-              </FieldLabel>
-              <Input id="q2ViewOther" {...register("q2ViewOther")} />
-            </Field>
-          )}
+                )}
+              />
+              {(q2View ?? []).includes("other") && (
+                <Field>
+                  <FieldLabel htmlFor="q2ViewOther">
+                    {t.recruitmentForm.section9.specifyOther}
+                  </FieldLabel>
+                  <Input id="q2ViewOther" {...register("q2ViewOther")} />
+                </Field>
+              )}
 
-          <Controller
-            control={control}
-            name="q3FamilyReaction"
-            render={({ field }) => (
-              <Field
-                data-slot="checkbox-group"
-                data-invalid={!!errors.q3FamilyReaction}
-              >
-                <FieldLabel>{t.recruitmentForm.section9.q3Label}</FieldLabel>
-                {Q3_OPTIONS.map(opt => (
+              <Controller
+                control={control}
+                name="q3TargetAudience"
+                render={({ field }) => (
                   <Field
-                    key={opt.value}
-                    orientation="horizontal"
-                    className="items-start"
+                    data-slot="checkbox-group"
+                    data-invalid={!!errors.q3TargetAudience}
                   >
-                    <Checkbox
-                      checked={field.value.includes(opt.value)}
-                      onCheckedChange={checked => {
-                        field.onChange(
-                          checked
-                            ? [...field.value, opt.value]
-                            : field.value.filter(v => v !== opt.value)
-                        );
-                      }}
-                      id={`q3FamilyReaction-${opt.value}`}
-                    />
-                    <FieldLabel
-                      htmlFor={`q3FamilyReaction-${opt.value}`}
-                      className="font-normal"
-                    >
-                      {opt.label}
+                    <FieldLabel>
+                      {t.recruitmentForm.section9.q3Label}
                     </FieldLabel>
+                    {Q3_OPTIONS.map(opt => (
+                      <Field
+                        key={opt.value}
+                        orientation="horizontal"
+                        className="items-start"
+                      >
+                        <Checkbox
+                          checked={(field.value ?? []).includes(opt.value)}
+                          onCheckedChange={checked => {
+                            field.onChange(
+                              checked
+                                ? [...(field.value ?? []), opt.value]
+                                : (field.value ?? []).filter(
+                                    v => v !== opt.value
+                                  )
+                            );
+                          }}
+                          id={`q3TargetAudience-${opt.value}`}
+                        />
+                        <FieldLabel
+                          htmlFor={`q3TargetAudience-${opt.value}`}
+                          className="font-normal"
+                        >
+                          {opt.label}
+                        </FieldLabel>
+                      </Field>
+                    ))}
+                    <FieldError
+                      errors={
+                        errors.q3TargetAudience
+                          ? [errors.q3TargetAudience]
+                          : undefined
+                      }
+                    />
                   </Field>
-                ))}
+                )}
+              />
+              {(q3TargetAudience ?? []).includes("other") && (
+                <Field>
+                  <FieldLabel htmlFor="q3TargetAudienceOther">
+                    {t.recruitmentForm.section9.specifyOther}
+                  </FieldLabel>
+                  <Input
+                    id="q3TargetAudienceOther"
+                    {...register("q3TargetAudienceOther")}
+                  />
+                </Field>
+              )}
+
+              <Field data-invalid={!!errors.q4FirstTenPeople}>
+                <FieldLabel htmlFor="q4FirstTenPeople">
+                  {t.recruitmentForm.section9.q4Label}
+                </FieldLabel>
+                <Input
+                  id="q4FirstTenPeople"
+                  {...register("q4FirstTenPeople")}
+                />
                 <FieldError
                   errors={
-                    errors.q3FamilyReaction
-                      ? [errors.q3FamilyReaction]
+                    errors.q4FirstTenPeople
+                      ? [errors.q4FirstTenPeople]
                       : undefined
                   }
                 />
               </Field>
-            )}
-          />
-          {(q3FamilyReaction ?? []).includes("other") && (
-            <Field>
-              <FieldLabel htmlFor="q3FamilyReactionOther">
-                {t.recruitmentForm.section9.specifyOther}
-              </FieldLabel>
-              <Input
-                id="q3FamilyReactionOther"
-                {...register("q3FamilyReactionOther")}
+
+              <Controller
+                control={control}
+                name="q5Training"
+                render={({ field }) => (
+                  <Field
+                    data-slot="checkbox-group"
+                    data-invalid={!!errors.q5Training}
+                  >
+                    <FieldLabel>
+                      {t.recruitmentForm.section9.q5Label}
+                    </FieldLabel>
+                    {TRAINING_OPTIONS.map(opt => (
+                      <Field
+                        key={opt.value}
+                        orientation="horizontal"
+                        className="items-start"
+                      >
+                        <Checkbox
+                          checked={(field.value ?? []).includes(opt.value)}
+                          onCheckedChange={checked => {
+                            field.onChange(
+                              checked
+                                ? [...(field.value ?? []), opt.value]
+                                : (field.value ?? []).filter(
+                                    v => v !== opt.value
+                                  )
+                            );
+                          }}
+                          id={`training-${opt.value}`}
+                        />
+                        <FieldLabel
+                          htmlFor={`training-${opt.value}`}
+                          className="font-normal"
+                        >
+                          {opt.label}
+                        </FieldLabel>
+                      </Field>
+                    ))}
+                    <FieldError
+                      errors={
+                        errors.q5Training ? [errors.q5Training] : undefined
+                      }
+                    />
+                  </Field>
+                )}
               />
-            </Field>
-          )}
 
-          <Field data-invalid={!!errors.q4FirstTenPeople}>
-            <FieldLabel htmlFor="q4FirstTenPeople">
-              {t.recruitmentForm.section9.q4Label}
-            </FieldLabel>
-            <Input id="q4FirstTenPeople" {...register("q4FirstTenPeople")} />
-            <FieldError
-              errors={
-                errors.q4FirstTenPeople ? [errors.q4FirstTenPeople] : undefined
-              }
-            />
-          </Field>
-
-          <Controller
-            control={control}
-            name="q5Training"
-            render={({ field }) => (
-              <Field
-                data-slot="checkbox-group"
-                data-invalid={!!errors.q5Training}
-              >
-                <FieldLabel>{t.recruitmentForm.section9.q5Label}</FieldLabel>
-                {TRAINING_OPTIONS.map(opt => (
+              <Controller
+                control={control}
+                name="q6Support"
+                render={({ field }) => (
                   <Field
-                    key={opt.value}
-                    orientation="horizontal"
-                    className="items-start"
+                    data-slot="checkbox-group"
+                    data-invalid={!!errors.q6Support}
                   >
-                    <Checkbox
-                      checked={field.value.includes(opt.value)}
-                      onCheckedChange={checked => {
-                        field.onChange(
-                          checked
-                            ? [...field.value, opt.value]
-                            : field.value.filter(v => v !== opt.value)
-                        );
-                      }}
-                      id={`training-${opt.value}`}
-                    />
-                    <FieldLabel
-                      htmlFor={`training-${opt.value}`}
-                      className="font-normal"
-                    >
-                      {opt.label}
+                    <FieldLabel>
+                      {t.recruitmentForm.section9.q6Label}
                     </FieldLabel>
-                  </Field>
-                ))}
-                <FieldError
-                  errors={errors.q5Training ? [errors.q5Training] : undefined}
-                />
-              </Field>
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="q6Support"
-            render={({ field }) => (
-              <Field
-                data-slot="checkbox-group"
-                data-invalid={!!errors.q6Support}
-              >
-                <FieldLabel>{t.recruitmentForm.section9.q6Label}</FieldLabel>
-                {Q6_OPTIONS.map(opt => (
-                  <Field
-                    key={opt.value}
-                    orientation="horizontal"
-                    className="items-start"
-                  >
-                    <Checkbox
-                      checked={field.value.includes(opt.value)}
-                      onCheckedChange={checked => {
-                        field.onChange(
-                          checked
-                            ? [...field.value, opt.value]
-                            : field.value.filter(v => v !== opt.value)
-                        );
-                      }}
-                      id={`q6Support-${opt.value}`}
+                    {Q6_OPTIONS.map(opt => (
+                      <Field
+                        key={opt.value}
+                        orientation="horizontal"
+                        className="items-start"
+                      >
+                        <Checkbox
+                          checked={(field.value ?? []).includes(opt.value)}
+                          onCheckedChange={checked => {
+                            field.onChange(
+                              checked
+                                ? [...(field.value ?? []), opt.value]
+                                : (field.value ?? []).filter(
+                                    v => v !== opt.value
+                                  )
+                            );
+                          }}
+                          id={`q6Support-${opt.value}`}
+                        />
+                        <FieldLabel
+                          htmlFor={`q6Support-${opt.value}`}
+                          className="font-normal"
+                        >
+                          {opt.label}
+                        </FieldLabel>
+                      </Field>
+                    ))}
+                    <FieldError
+                      errors={errors.q6Support ? [errors.q6Support] : undefined}
                     />
-                    <FieldLabel
-                      htmlFor={`q6Support-${opt.value}`}
-                      className="font-normal"
-                    >
-                      {opt.label}
-                    </FieldLabel>
                   </Field>
-                ))}
-                <FieldError
-                  errors={errors.q6Support ? [errors.q6Support] : undefined}
-                />
-              </Field>
-            )}
-          />
-          {(q6Support ?? []).includes("other") && (
-            <Field>
-              <FieldLabel htmlFor="q6SupportOther">
-                {t.recruitmentForm.section9.specifyOther}
-              </FieldLabel>
-              <Input id="q6SupportOther" {...register("q6SupportOther")} />
-            </Field>
+                )}
+              />
+              {(q6Support ?? []).includes("other") && (
+                <Field>
+                  <FieldLabel htmlFor="q6SupportOther">
+                    {t.recruitmentForm.section9.specifyOther}
+                  </FieldLabel>
+                  <Input id="q6SupportOther" {...register("q6SupportOther")} />
+                </Field>
+              )}
+            </>
           )}
         </FieldGroup>
       </SectionCard>

@@ -91,14 +91,6 @@ export function buildAnswerBlocks(
         },
         { label: s1.taxCode, getValue: s => s.taxCode || DASH },
         {
-          label: s1.taxCodeIssueDate,
-          getValue: s => s.taxCodeIssueDate || DASH,
-        },
-        {
-          label: s1.taxCodeIssuePlace,
-          getValue: s => s.taxCodeIssuePlace || DASH,
-        },
-        {
           label: s1.averageMonthlyIncomeLabel,
           getValue: s => lookup(opt.income, s.averageMonthlyIncome),
         },
@@ -108,11 +100,23 @@ export function buildAnswerBlocks(
         },
         {
           label: s1.educationLevelLabel,
-          getValue: s => lookup(opt.education, s.educationLevel),
+          getValue: s =>
+            withOther(
+              lookup(opt.education, s.educationLevel),
+              s.educationLevelOther
+            ),
         },
         {
           label: s1.civilServantLabel,
           getValue: s => lookup(civilServant, s.isCivilServant),
+        },
+        {
+          label: s1.civilServantTypeLabel,
+          getValue: s =>
+            withOther(
+              joinLookup(opt.civilServantType, s.civilServantType),
+              s.civilServantTypeOther
+            ),
         },
         {
           label: s1.accountHolderNameLabel,
@@ -135,7 +139,8 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: s2.channelLabel,
-          getValue: s => lookup(opt.channel, s.channel),
+          getValue: s =>
+            withOther(lookup(opt.channel, s.channel), s.channelOther),
         },
         {
           label: s2.agencyTypeLabel,
@@ -155,6 +160,22 @@ export function buildAnswerBlocks(
           getValue: s => joinLookup(opt.program, s.programTypes),
         },
         { label: s2.rehireLabel, getValue: s => yesNo(s2, s.isRehire) },
+        {
+          label: s2.rehireFromDateLabel,
+          getValue: s => s.rehireFromDate || DASH,
+        },
+        {
+          label: s2.rehireToDateLabel,
+          getValue: s => s.rehireToDate || DASH,
+        },
+        {
+          label: s2.rehireChannelLabel,
+          getValue: s =>
+            withOther(
+              lookup(opt.channel, s.rehireChannel),
+              s.rehireChannelOther
+            ),
+        },
         { label: s2.recruiterCode, getValue: s => s.recruiterCode || DASH },
         { label: s2.recruiterName, getValue: s => s.recruiterName || DASH },
         { label: s2.referrerCode, getValue: s => s.referrerCode || DASH },
@@ -298,7 +319,10 @@ export function buildAnswerBlocks(
     {
       title: s9.title,
       columns: [
-        { label: s9.q1Label, getValue: s => yesNo(s9, s.q1Experience) },
+        {
+          label: s9.q1Label,
+          getValue: s => joinLookup(opt.q1, s.q1Experience),
+        },
         {
           label: s9.q2Label,
           getValue: s => withOther(joinLookup(opt.q2, s.q2View), s.q2ViewOther),
@@ -307,8 +331,8 @@ export function buildAnswerBlocks(
           label: s9.q3Label,
           getValue: s =>
             withOther(
-              joinLookup(opt.q3, s.q3FamilyReaction),
-              s.q3FamilyReactionOther
+              joinLookup(opt.q3, s.q3TargetAudience),
+              s.q3TargetAudienceOther
             ),
         },
         { label: s9.q4Label, getValue: s => s.q4FirstTenPeople || DASH },
