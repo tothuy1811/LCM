@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { IconDownload, IconLoader2 } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 import {
@@ -14,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { createRecruitmentsColumns } from "@/components/recruitments-columns";
 import { useDictionary } from "@/hooks/use-dictionary";
@@ -31,6 +33,10 @@ export function RecruitmentsView({
   const [submissions, setSubmissions] = useState(initialSubmissions);
   const [deleting, setDeleting] = useState<TRecruitmentSubmission | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [selectedSubmissions, setSelectedSubmissions] = useState<
+    TRecruitmentSubmission[]
+  >([]);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleDownload = async (submission: TRecruitmentSubmission) => {
     setDownloadingId(submission.id);
@@ -51,6 +57,30 @@ export function RecruitmentsView({
       toast.error(t.errors.recruitment.exportFailed);
     } finally {
       setDownloadingId(null);
+    }
+  };
+
+  const handleExportSelected = async () => {
+    setIsExporting(true);
+    try {
+      const response = await fetch("/api/recruitments/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: selectedSubmissions.map(s => s.id) }),
+      });
+      if (!response.ok) throw new Error("export failed");
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `danh-sach-ung-vien-${selectedSubmissions.length}.zip`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error(t.errors.recruitment.exportFailed);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -79,10 +109,28 @@ export function RecruitmentsView({
   return (
     <div className="flex flex-col gap-4">
       <DataTable
-        data={submissions.map(s => ({ ...s, id: s.id }))}
+        data={submissions}
         columns={columns}
         emptyMessage={t.recruitmentsList.empty}
         enableColumnVisibility={false}
+        enableRowSelection
+        onSelectionChange={setSelectedSubmissions}
+        rightContent={
+          selectedSubmissions.length > 0 && (
+            <Button
+              size="sm"
+              disabled={isExporting}
+              onClick={handleExportSelected}
+            >
+              {isExporting ? (
+                <IconLoader2 className="size-4 animate-spin" />
+              ) : (
+                <IconDownload className="size-4" />
+              )}
+              {t.recruitmentsList.exportSelected(selectedSubmissions.length)}
+            </Button>
+          )
+        }
       />
 
       <AlertDialog

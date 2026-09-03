@@ -186,6 +186,32 @@ export async function getRecruitmentSubmission(
   }
 }
 
+export async function getRecruitmentSubmissionsByIds(
+  ids: string[]
+): Promise<ActionResult<TRecruitmentSubmission[]>> {
+  const check = await requireRecruitmentAccess();
+  if (!check.ok) return check;
+  const { dict, user } = check;
+
+  const uniqueIds = [...new Set(ids)].slice(0, 200);
+  if (uniqueIds.length === 0) return { ok: true, data: [] };
+
+  try {
+    const docs = await adminDb.getAll(
+      ...uniqueIds.map(id => adminDb.collection(COLLECTION).doc(id))
+    );
+
+    const submissions = docs
+      .filter(doc => doc.exists)
+      .map(doc => ({ id: doc.id, ...doc.data() }) as TRecruitmentSubmission)
+      .filter(s => user.role !== "ad" || s.managerUid === user.uid);
+
+    return { ok: true, data: submissions };
+  } catch {
+    return { ok: false, error: dict.errors.recruitment.listFailed };
+  }
+}
+
 export async function updateRecruitmentSubmission(
   id: string,
   values: RecruitmentValues

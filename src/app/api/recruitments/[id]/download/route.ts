@@ -5,6 +5,7 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
 import {
   buildRecruitmentWorkbook,
   sanitizeFilename,
+  uniqueName,
 } from "@/lib/recruitment-export";
 import { getRecruitmentSubmission } from "@/server/recruitment-actions";
 
@@ -52,25 +53,4 @@ export async function GET(
       "Content-Length": String(zipBuffer.length),
     },
   });
-}
-
-function uniqueName(fileName: string, used: Set<string>): string {
-  if (!used.has(fileName)) {
-    used.add(fileName);
-    return fileName;
-  }
-
-  const dotIndex = fileName.lastIndexOf(".");
-  const base = dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName;
-  const ext = dotIndex > 0 ? fileName.slice(dotIndex) : "";
-
-  let candidate: string;
-  let counter = 1;
-  do {
-    candidate = `${base} (${counter})${ext}`;
-    counter += 1;
-  } while (used.has(candidate));
-
-  used.add(candidate);
-  return candidate;
 }

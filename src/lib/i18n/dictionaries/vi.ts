@@ -187,6 +187,7 @@ export const vi = {
     deleteSr: "Xóa",
     downloadSr: "Tải xuống hồ sơ",
     downloading: "Đang chuẩn bị tệp tải xuống...",
+    exportSelected: (count: number) => `Tải xuống đã chọn (${count})`,
     positionLabels: {
       agent: "Life Planner (Agent)",
       unit_manager: "Unit Manager (UM)",

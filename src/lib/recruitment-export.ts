@@ -3,8 +3,12 @@ import ExcelJS from "exceljs";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { TRecruitmentSubmission } from "@/server/recruitment-actions";
 
-type Column = { label: string; value: string };
+type Column = {
+  label: string;
+  getValue: (submission: TRecruitmentSubmission) => string;
+};
 type Block = { title: string; columns: Column[] };
+type RepeatCounts = { workHistory: number; familyMembers: number };
 
 const DASH = "—";
 
@@ -41,8 +45,8 @@ function formatDateTime(value: string | undefined) {
 }
 
 export function buildAnswerBlocks(
-  submission: TRecruitmentSubmission,
-  dict: Dictionary
+  dict: Dictionary,
+  repeatCounts: RepeatCounts
 ): Block[] {
   const f = dict.recruitmentForm;
   const opt = f.options;
@@ -61,69 +65,69 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: dict.recruitmentsList.columns.status,
-          value: dict.recruitmentsList.statusLabels[submission.status],
+          getValue: s => dict.recruitmentsList.statusLabels[s.status],
         },
         {
           label: dict.recruitmentDetailView.submittedAt,
-          value: formatDateTime(submission.submittedAt),
+          getValue: s => formatDateTime(s.submittedAt),
         },
       ],
     },
     {
       title: s1.title,
       columns: [
-        { label: s1.fullName, value: submission.fullName || DASH },
-        { label: s1.dateOfBirth, value: submission.dateOfBirth || DASH },
-        { label: s1.idNumber, value: submission.idNumber || DASH },
-        { label: s1.idIssueDate, value: submission.idIssueDate || DASH },
-        { label: s1.idIssuePlace, value: submission.idIssuePlace || DASH },
+        { label: s1.fullName, getValue: s => s.fullName || DASH },
+        { label: s1.dateOfBirth, getValue: s => s.dateOfBirth || DASH },
+        { label: s1.idNumber, getValue: s => s.idNumber || DASH },
+        { label: s1.idIssueDate, getValue: s => s.idIssueDate || DASH },
+        { label: s1.idIssuePlace, getValue: s => s.idIssuePlace || DASH },
         {
           label: s1.genderLabel,
-          value: lookup(genderLabels, submission.gender),
+          getValue: s => lookup(genderLabels, s.gender),
         },
         {
           label: s1.maritalStatusLabel,
-          value: lookup(opt.maritalStatus, submission.maritalStatus),
+          getValue: s => lookup(opt.maritalStatus, s.maritalStatus),
         },
-        { label: s1.taxCode, value: submission.taxCode || DASH },
+        { label: s1.taxCode, getValue: s => s.taxCode || DASH },
         {
           label: s1.taxCodeIssueDate,
-          value: submission.taxCodeIssueDate || DASH,
+          getValue: s => s.taxCodeIssueDate || DASH,
         },
         {
           label: s1.taxCodeIssuePlace,
-          value: submission.taxCodeIssuePlace || DASH,
+          getValue: s => s.taxCodeIssuePlace || DASH,
         },
         {
           label: s1.averageMonthlyIncomeLabel,
-          value: lookup(opt.income, submission.averageMonthlyIncome),
+          getValue: s => lookup(opt.income, s.averageMonthlyIncome),
         },
         {
           label: s1.potentialCustomers,
-          value: submission.potentialCustomers || DASH,
+          getValue: s => s.potentialCustomers || DASH,
         },
         {
           label: s1.educationLevelLabel,
-          value: lookup(opt.education, submission.educationLevel),
+          getValue: s => lookup(opt.education, s.educationLevel),
         },
         {
           label: s1.civilServantLabel,
-          value: lookup(civilServant, submission.isCivilServant),
+          getValue: s => lookup(civilServant, s.isCivilServant),
         },
         {
           label: s1.accountHolderNameLabel,
-          value: submission.accountHolderName || DASH,
+          getValue: s => s.accountHolderName || DASH,
         },
         {
           label: s1.bankAccountNumberLabel,
-          value: submission.bankAccountNumber || DASH,
+          getValue: s => s.bankAccountNumber || DASH,
         },
-        { label: s1.bankNameLabel, value: submission.bankName || DASH },
-        { label: s1.branchLabel, value: submission.branch || DASH },
-        { label: s1.mobile1, value: submission.mobile1 || DASH },
-        { label: s1.mobile2, value: submission.mobile2 || DASH },
-        { label: s1.email, value: submission.email || DASH },
-        { label: s1.managerLabel, value: submission.managerName || DASH },
+        { label: s1.bankNameLabel, getValue: s => s.bankName || DASH },
+        { label: s1.branchLabel, getValue: s => s.branch || DASH },
+        { label: s1.mobile1, getValue: s => s.mobile1 || DASH },
+        { label: s1.mobile2, getValue: s => s.mobile2 || DASH },
+        { label: s1.email, getValue: s => s.email || DASH },
+        { label: s1.managerLabel, getValue: s => s.managerName || DASH },
       ],
     },
     {
@@ -131,32 +135,30 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: s2.channelLabel,
-          value: lookup(opt.channel, submission.channel),
+          getValue: s => lookup(opt.channel, s.channel),
         },
         {
           label: s2.agencyTypeLabel,
-          value: lookup(opt.agencyType, submission.agencyType),
+          getValue: s => lookup(opt.agencyType, s.agencyType),
         },
         {
           label: s2.positionLabel,
-          value: withOther(
-            lookup(opt.position, submission.positionApplied),
-            submission.positionOther
-          ),
+          getValue: s =>
+            withOther(lookup(opt.position, s.positionApplied), s.positionOther),
         },
         {
           label: s2.programLabel,
-          value: yesNo(s2, submission.participatingProgram),
+          getValue: s => yesNo(s2, s.participatingProgram),
         },
         {
           label: s2.programLabel,
-          value: joinLookup(opt.program, submission.programTypes),
+          getValue: s => joinLookup(opt.program, s.programTypes),
         },
-        { label: s2.rehireLabel, value: yesNo(s2, submission.isRehire) },
-        { label: s2.recruiterCode, value: submission.recruiterCode || DASH },
-        { label: s2.recruiterName, value: submission.recruiterName || DASH },
-        { label: s2.referrerCode, value: submission.referrerCode || DASH },
-        { label: s2.referrerName, value: submission.referrerName || DASH },
+        { label: s2.rehireLabel, getValue: s => yesNo(s2, s.isRehire) },
+        { label: s2.recruiterCode, getValue: s => s.recruiterCode || DASH },
+        { label: s2.recruiterName, getValue: s => s.recruiterName || DASH },
+        { label: s2.referrerCode, getValue: s => s.referrerCode || DASH },
+        { label: s2.referrerName, getValue: s => s.referrerName || DASH },
       ],
     },
     {
@@ -164,15 +166,15 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: f.section3.provinceLabel,
-          value: submission.permanentProvince || DASH,
+          getValue: s => s.permanentProvince || DASH,
         },
         {
           label: f.section3.wardLabel,
-          value: submission.permanentWard || DASH,
+          getValue: s => s.permanentWard || DASH,
         },
         {
           label: f.section3.streetLabel,
-          value: submission.permanentStreetAddress || DASH,
+          getValue: s => s.permanentStreetAddress || DASH,
         },
       ],
     },
@@ -181,24 +183,24 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: f.section4.title,
-          value:
-            submission.sameAsPermanentAddress === "same"
+          getValue: s =>
+            s.sameAsPermanentAddress === "same"
               ? f.section4.same
-              : submission.sameAsPermanentAddress === "different"
+              : s.sameAsPermanentAddress === "different"
                 ? f.section4.different
                 : DASH,
         },
         {
           label: f.section4.provinceLabel,
-          value: submission.temporaryProvince || DASH,
+          getValue: s => s.temporaryProvince || DASH,
         },
         {
           label: f.section4.wardLabel,
-          value: submission.temporaryWard || DASH,
+          getValue: s => s.temporaryWard || DASH,
         },
         {
           label: f.section4.streetLabel,
-          value: submission.temporaryStreetAddress || DASH,
+          getValue: s => s.temporaryStreetAddress || DASH,
         },
       ],
     },
@@ -207,19 +209,28 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: s5.hasInsuranceExperienceLabel,
-          value: yesNo(s5, submission.hasInsuranceExperience),
+          getValue: s => yesNo(s5, s.hasInsuranceExperience),
         },
       ],
     },
-    ...(submission.workHistory ?? []).map((entry, index): Block => ({
+    ...Array.from({ length: repeatCounts.workHistory }, (_, index): Block => ({
       title: s5.companyHeading(index + 1),
       columns: [
-        { label: s5.fromDate, value: entry.fromDate || DASH },
-        { label: s5.toDate, value: entry.toDate || DASH },
-        { label: s5.jobTitle, value: entry.title || DASH },
+        {
+          label: s5.fromDate,
+          getValue: s => s.workHistory?.[index]?.fromDate || DASH,
+        },
+        {
+          label: s5.toDate,
+          getValue: s => s.workHistory?.[index]?.toDate || DASH,
+        },
+        {
+          label: s5.jobTitle,
+          getValue: s => s.workHistory?.[index]?.title || DASH,
+        },
         {
           label: s5.companyNameAddress,
-          value: entry.companyNameAddress || DASH,
+          getValue: s => s.workHistory?.[index]?.companyNameAddress || DASH,
         },
       ],
     })),
@@ -228,9 +239,12 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: f.section6.title,
-          value: joinLookup(opt.referral, submission.referralChannel),
+          getValue: s => joinLookup(opt.referral, s.referralChannel),
         },
-        { label: opt.referral.other, value: submission.referralOther || DASH },
+        {
+          label: opt.referral.other,
+          getValue: s => s.referralOther || DASH,
+        },
       ],
     },
     {
@@ -238,56 +252,74 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: s7.questionLabel,
-          value: yesNo(s7, submission.hasPepRelationship),
+          getValue: s => yesNo(s7, s.hasPepRelationship),
         },
-        { label: s7.relationship, value: submission.pepRelationship || DASH },
-        { label: s7.fullName, value: submission.pepFullName || DASH },
-        { label: s7.position, value: submission.pepPosition || DASH },
-        { label: s7.organization, value: submission.pepOrganization || DASH },
+        {
+          label: s7.relationship,
+          getValue: s => s.pepRelationship || DASH,
+        },
+        { label: s7.fullName, getValue: s => s.pepFullName || DASH },
+        { label: s7.position, getValue: s => s.pepPosition || DASH },
+        {
+          label: s7.organization,
+          getValue: s => s.pepOrganization || DASH,
+        },
       ],
     },
-    ...(submission.familyMembers ?? []).map((member, index): Block => ({
-      title: f.section8.memberHeading(index + 1),
-      columns: [
-        { label: f.section8.name, value: member.name || DASH },
-        { label: f.section8.birthYear, value: member.birthYear || DASH },
-        {
-          label: f.section8.relationshipLabel,
-          value: lookup(opt.relationship, member.relationship),
-        },
-        { label: f.section8.occupation, value: member.occupation || DASH },
-        { label: f.section8.address, value: member.address || DASH },
-      ],
-    })),
+    ...Array.from(
+      { length: repeatCounts.familyMembers },
+      (_, index): Block => ({
+        title: f.section8.memberHeading(index + 1),
+        columns: [
+          {
+            label: f.section8.name,
+            getValue: s => s.familyMembers?.[index]?.name || DASH,
+          },
+          {
+            label: f.section8.birthYear,
+            getValue: s => s.familyMembers?.[index]?.birthYear || DASH,
+          },
+          {
+            label: f.section8.relationshipLabel,
+            getValue: s =>
+              lookup(opt.relationship, s.familyMembers?.[index]?.relationship),
+          },
+          {
+            label: f.section8.occupation,
+            getValue: s => s.familyMembers?.[index]?.occupation || DASH,
+          },
+          {
+            label: f.section8.address,
+            getValue: s => s.familyMembers?.[index]?.address || DASH,
+          },
+        ],
+      })
+    ),
     {
       title: s9.title,
       columns: [
-        { label: s9.q1Label, value: yesNo(s9, submission.q1Experience) },
+        { label: s9.q1Label, getValue: s => yesNo(s9, s.q1Experience) },
         {
           label: s9.q2Label,
-          value: withOther(
-            joinLookup(opt.q2, submission.q2View),
-            submission.q2ViewOther
-          ),
+          getValue: s => withOther(joinLookup(opt.q2, s.q2View), s.q2ViewOther),
         },
         {
           label: s9.q3Label,
-          value: withOther(
-            joinLookup(opt.q3, submission.q3FamilyReaction),
-            submission.q3FamilyReactionOther
-          ),
+          getValue: s =>
+            withOther(
+              joinLookup(opt.q3, s.q3FamilyReaction),
+              s.q3FamilyReactionOther
+            ),
         },
-        { label: s9.q4Label, value: submission.q4FirstTenPeople || DASH },
+        { label: s9.q4Label, getValue: s => s.q4FirstTenPeople || DASH },
         {
           label: s9.q5Label,
-          value: joinLookup(opt.training, submission.q5Training),
+          getValue: s => joinLookup(opt.training, s.q5Training),
         },
         {
           label: s9.q6Label,
-          value: withOther(
-            joinLookup(opt.q6, submission.q6Support),
-            submission.q6SupportOther
-          ),
+          getValue: s =>
+            withOther(joinLookup(opt.q6, s.q6Support), s.q6SupportOther),
         },
       ],
     },
@@ -296,29 +328,34 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: s11.voluntary,
-          value: yesNo(s11, submission.commitmentVoluntary ? "yes" : "no"),
+          getValue: s => yesNo(s11, s.commitmentVoluntary ? "yes" : "no"),
         },
         {
           label: s11.dataConsent,
-          value: yesNo(s11, submission.commitmentDataConsent ? "yes" : "no"),
+          getValue: s => yesNo(s11, s.commitmentDataConsent ? "yes" : "no"),
         },
         {
           label: s11.consentLabel,
-          value: yesNo(s11, submission.confirmationConsent),
+          getValue: s => yesNo(s11, s.confirmationConsent),
         },
         {
           label: s11.methodLabel,
-          value:
-            submission.confirmationMethod === "handwritten"
-              ? s11.handwritten
-              : DASH,
+          getValue: s =>
+            s.confirmationMethod === "handwritten" ? s11.handwritten : DASH,
         },
-        { label: s11.signDateLabel, value: submission.signDate || DASH },
+        { label: s11.signDateLabel, getValue: s => s.signDate || DASH },
       ],
     },
   ];
 
   return blocks;
+}
+
+function repeatCountsFor(submission: TRecruitmentSubmission): RepeatCounts {
+  return {
+    workHistory: submission.workHistory?.length ?? 0,
+    familyMembers: submission.familyMembers?.length ?? 0,
+  };
 }
 
 const HEADER_FILL: ExcelJS.Fill = {
@@ -332,26 +369,17 @@ const LABEL_FILL: ExcelJS.Fill = {
   fgColor: { argb: "FFF3F4F6" },
 };
 
-export async function buildRecruitmentWorkbook(
-  submission: TRecruitmentSubmission,
-  dict: Dictionary
-): Promise<ExcelJS.Buffer> {
-  const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet("Sheet1");
-
+function writeHeaderRows(sheet: ExcelJS.Worksheet, blocks: Block[]) {
   const titleRow = sheet.getRow(1);
   const labelRow = sheet.getRow(2);
-  const valueRow = sheet.getRow(3);
   labelRow.height = 80;
-  valueRow.height = 51;
 
   let column = 1;
-  for (const block of buildAnswerBlocks(submission, dict)) {
+  for (const block of blocks) {
     const startColumn = column;
     for (const field of block.columns) {
       titleRow.getCell(column).value = block.title;
       labelRow.getCell(column).value = field.label;
-      valueRow.getCell(column).value = field.value;
       column += 1;
     }
     const endColumn = column - 1;
@@ -367,9 +395,40 @@ export async function buildRecruitmentWorkbook(
     cell.fill = LABEL_FILL;
     cell.alignment = { vertical: "top", wrapText: true };
   });
-  valueRow.eachCell(cell => {
+}
+
+function writeValueRow(
+  sheet: ExcelJS.Worksheet,
+  rowNumber: number,
+  blocks: Block[],
+  submission: TRecruitmentSubmission
+) {
+  const row = sheet.getRow(rowNumber);
+  row.height = 51;
+
+  let column = 1;
+  for (const block of blocks) {
+    for (const field of block.columns) {
+      row.getCell(column).value = field.getValue(submission);
+      column += 1;
+    }
+  }
+
+  row.eachCell(cell => {
     cell.alignment = { vertical: "top", wrapText: true };
   });
+}
+
+export async function buildRecruitmentWorkbook(
+  submission: TRecruitmentSubmission,
+  dict: Dictionary
+): Promise<ExcelJS.Buffer> {
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("Sheet1");
+
+  const blocks = buildAnswerBlocks(dict, repeatCountsFor(submission));
+  writeHeaderRows(sheet, blocks);
+  writeValueRow(sheet, 3, blocks, submission);
 
   if (submission.attachments?.length) {
     const attachmentsSheet = workbook.addWorksheet(
@@ -388,6 +447,33 @@ export async function buildRecruitmentWorkbook(
   return workbook.xlsx.writeBuffer();
 }
 
+export async function buildRecruitmentsWorkbook(
+  submissions: TRecruitmentSubmission[],
+  dict: Dictionary
+): Promise<ExcelJS.Buffer> {
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("Sheet1");
+
+  const repeatCounts: RepeatCounts = {
+    workHistory: Math.max(
+      0,
+      ...submissions.map(s => s.workHistory?.length ?? 0)
+    ),
+    familyMembers: Math.max(
+      0,
+      ...submissions.map(s => s.familyMembers?.length ?? 0)
+    ),
+  };
+
+  const blocks = buildAnswerBlocks(dict, repeatCounts);
+  writeHeaderRows(sheet, blocks);
+  submissions.forEach((submission, index) => {
+    writeValueRow(sheet, index + 3, blocks, submission);
+  });
+
+  return workbook.xlsx.writeBuffer();
+}
+
 export function sanitizeFilename(name: string): string {
   const cleaned = name
     .normalize("NFD")
@@ -396,4 +482,25 @@ export function sanitizeFilename(name: string): string {
     .replace(/[^a-zA-Z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
   return cleaned || "recruitment";
+}
+
+export function uniqueName(fileName: string, used: Set<string>): string {
+  if (!used.has(fileName)) {
+    used.add(fileName);
+    return fileName;
+  }
+
+  const dotIndex = fileName.lastIndexOf(".");
+  const base = dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName;
+  const ext = dotIndex > 0 ? fileName.slice(dotIndex) : "";
+
+  let candidate: string;
+  let counter = 1;
+  do {
+    candidate = `${base} (${counter})${ext}`;
+    counter += 1;
+  } while (used.has(candidate));
+
+  used.add(candidate);
+  return candidate;
 }

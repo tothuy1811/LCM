@@ -190,6 +190,7 @@ export const en: typeof vi = {
     deleteSr: "Delete",
     downloadSr: "Download submission",
     downloading: "Preparing the download...",
+    exportSelected: (count: number) => `Download selected (${count})`,
     positionLabels: {
       agent: "Life Planner (Agent)",
       unit_manager: "Unit Manager (UM)",
