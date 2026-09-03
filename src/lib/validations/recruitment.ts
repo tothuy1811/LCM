@@ -70,6 +70,7 @@ export function buildRecruitmentSchema(
         ])
       )
       .optional(),
+    programTypesOther: z.string().optional(),
 
     isRehire: z.enum(["no", "yes"]).optional(),
     rehireFromDate: z.string().optional(),
@@ -78,9 +79,11 @@ export function buildRecruitmentSchema(
     rehireChannelOther: z.string().optional(),
 
     recruiterCode: z.string().optional(),
-    recruiterName: z.string().min(1, t.recruiterNameRequired),
+    recruiterName: z.string().optional(),
+    recruiterIdNumber: z.string().optional(),
     referrerCode: z.string().optional(),
     referrerName: z.string().optional(),
+    referrerIdNumber: z.string().optional(),
 
     permanentProvince: z.string().min(1, t.permanentProvinceRequired),
     permanentWard: z.string().min(1, t.permanentWardRequired),
@@ -109,9 +112,7 @@ export function buildRecruitmentSchema(
           "ads",
           "fanpage",
           "website",
-          "friend",
-          "colleague",
-          "referral",
+          "friend_colleague_referral",
           "other",
         ])
       )
@@ -133,7 +134,6 @@ export function buildRecruitmentSchema(
           birthYear: z.string().optional(),
           relationship: z.string().optional(),
           occupation: z.string().optional(),
-          address: z.string().optional(),
         })
       )
       .optional(),

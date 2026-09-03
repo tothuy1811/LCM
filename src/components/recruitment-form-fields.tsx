@@ -342,12 +342,10 @@ export function RecruitmentFormFields({
     { value: "ads", label: t.recruitmentForm.options.referral.ads },
     { value: "fanpage", label: t.recruitmentForm.options.referral.fanpage },
     { value: "website", label: t.recruitmentForm.options.referral.website },
-    { value: "friend", label: t.recruitmentForm.options.referral.friend },
     {
-      value: "colleague",
-      label: t.recruitmentForm.options.referral.colleague,
+      value: "friend_colleague_referral",
+      label: t.recruitmentForm.options.referral.friend_colleague_referral,
     },
-    { value: "referral", label: t.recruitmentForm.options.referral.referral },
     { value: "other", label: t.recruitmentForm.options.referral.other },
   ] as const;
 
@@ -513,6 +511,7 @@ export function RecruitmentFormFields({
   const isCivilServant = watch("isCivilServant");
   const civilServantType = watch("civilServantType");
   const participatingProgram = watch("participatingProgram");
+  const programTypes = watch("programTypes");
   const isRehire = watch("isRehire");
   const rehireChannel = watch("rehireChannel");
   const sameAsPermanentAddress = watch("sameAsPermanentAddress");
@@ -1436,6 +1435,18 @@ export function RecruitmentFormFields({
               )}
             />
           )}
+          {participatingProgram === "yes" &&
+            (programTypes ?? []).includes("other") && (
+              <Field>
+                <FieldLabel htmlFor="programTypesOther">
+                  {t.recruitmentForm.section2.specifyOther}
+                </FieldLabel>
+                <Input
+                  id="programTypesOther"
+                  {...register("programTypesOther")}
+                />
+              </Field>
+            )}
 
           <FieldSeparator />
 
@@ -1554,15 +1565,19 @@ export function RecruitmentFormFields({
               </FieldLabel>
               <Input id="recruiterCode" {...register("recruiterCode")} />
             </Field>
-            <Field data-invalid={!!errors.recruiterName}>
+            <Field>
               <FieldLabel htmlFor="recruiterName">
                 {t.recruitmentForm.section2.recruiterName}
               </FieldLabel>
               <Input id="recruiterName" {...register("recruiterName")} />
-              <FieldError
-                errors={
-                  errors.recruiterName ? [errors.recruiterName] : undefined
-                }
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="recruiterIdNumber">
+                {t.recruitmentForm.section2.recruiterIdNumber}
+              </FieldLabel>
+              <Input
+                id="recruiterIdNumber"
+                {...register("recruiterIdNumber")}
               />
             </Field>
           </div>
@@ -1579,6 +1594,12 @@ export function RecruitmentFormFields({
                 {t.recruitmentForm.section2.referrerName}
               </FieldLabel>
               <Input id="referrerName" {...register("referrerName")} />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="referrerIdNumber">
+                {t.recruitmentForm.section2.referrerIdNumber}
+              </FieldLabel>
+              <Input id="referrerIdNumber" {...register("referrerIdNumber")} />
             </Field>
           </div>
 
@@ -1856,15 +1877,6 @@ export function RecruitmentFormFields({
                   />
                 </Field>
               </div>
-              <Field>
-                <FieldLabel htmlFor={`familyMembers.${index}.address`}>
-                  {t.recruitmentForm.section8.address}
-                </FieldLabel>
-                <Input
-                  id={`familyMembers.${index}.address`}
-                  {...register(`familyMembers.${index}.address` as const)}
-                />
-              </Field>
               {familyMemberFields.length > 1 && (
                 <Button
                   type="button"
@@ -1893,7 +1905,6 @@ export function RecruitmentFormFields({
                   birthYear: "",
                   relationship: "",
                   occupation: "",
-                  address: "",
                 })
               }
             >

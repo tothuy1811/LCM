@@ -62,7 +62,6 @@ export function RecruitmentForm({ managers }: { managers: TManagerOption[] }) {
           birthYear: "",
           relationship: "",
           occupation: "",
-          address: "",
         },
       ],
       q1Experience: [],

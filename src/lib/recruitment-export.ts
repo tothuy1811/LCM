@@ -25,10 +25,13 @@ function lookup(options: Record<string, string>, value: string | undefined) {
 
 function joinLookup(
   options: Record<string, string>,
-  values: string[] | undefined
+  values: string[] | string | undefined
 ) {
-  if (!values || values.length === 0) return DASH;
-  return values.map(v => options[v] ?? v).join(", ");
+  // Some fields (e.g. q1Experience) changed from a single enum value to an
+  // array of values; older submissions may still store the legacy shape.
+  const list = Array.isArray(values) ? values : values ? [values] : [];
+  if (list.length === 0) return DASH;
+  return list.map(v => options[v] ?? v).join(", ");
 }
 
 function withOther(base: string, other: string | undefined) {
@@ -157,7 +160,11 @@ export function buildAnswerBlocks(
         },
         {
           label: s2.programLabel,
-          getValue: s => joinLookup(opt.program, s.programTypes),
+          getValue: s =>
+            withOther(
+              joinLookup(opt.program, s.programTypes),
+              s.programTypesOther
+            ),
         },
         { label: s2.rehireLabel, getValue: s => yesNo(s2, s.isRehire) },
         {
@@ -178,8 +185,16 @@ export function buildAnswerBlocks(
         },
         { label: s2.recruiterCode, getValue: s => s.recruiterCode || DASH },
         { label: s2.recruiterName, getValue: s => s.recruiterName || DASH },
+        {
+          label: s2.recruiterIdNumber,
+          getValue: s => s.recruiterIdNumber || DASH,
+        },
         { label: s2.referrerCode, getValue: s => s.referrerCode || DASH },
         { label: s2.referrerName, getValue: s => s.referrerName || DASH },
+        {
+          label: s2.referrerIdNumber,
+          getValue: s => s.referrerIdNumber || DASH,
+        },
       ],
     },
     {
@@ -308,10 +323,6 @@ export function buildAnswerBlocks(
           {
             label: f.section8.occupation,
             getValue: s => s.familyMembers?.[index]?.occupation || DASH,
-          },
-          {
-            label: f.section8.address,
-            getValue: s => s.familyMembers?.[index]?.address || DASH,
           },
         ],
       })
