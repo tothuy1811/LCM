@@ -118,7 +118,7 @@ export const vi = {
     recruitmentPublic: {
       title: "Phiếu thông tin tuyển dụng",
       logoAlt: "Asahi Livwell",
-      heading: "Phiếu thông tin tuyển dụng & sàng lọc ứng viên",
+      heading: "Phiếu thông tin tuyển dụng",
       subtitle:
         "Vui lòng điền đầy đủ và chính xác thông tin bên dưới. Các trường có dấu * là bắt buộc.",
     },

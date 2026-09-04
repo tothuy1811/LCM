@@ -121,7 +121,7 @@ export const en: typeof vi = {
     recruitmentPublic: {
       title: "Recruitment information form",
       logoAlt: "Asahi Livwell",
-      heading: "Recruitment information & candidate screening form",
+      heading: "Recruitment information form",
       subtitle:
         "Please fill in the information below completely and accurately. Fields marked with * are required.",
     },
