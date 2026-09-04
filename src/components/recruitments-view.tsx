@@ -22,7 +22,9 @@ import { useDictionary } from "@/hooks/use-dictionary";
 import type { Role } from "@/lib/permissions";
 import {
   deleteRecruitmentSubmission,
+  updateRecruitmentAdminStatus,
   updateRecruitmentSubmissionStatus,
+  type TAdminStatus,
   type TRecruitmentStatus,
   type TRecruitmentSubmission,
 } from "@/server/recruitment-actions";
@@ -143,12 +145,43 @@ export function RecruitmentsView({
     setUpdatingStatusId(null);
   };
 
+  const handleAdminStatusChange = async (
+    submission: TRecruitmentSubmission,
+    adminStatus: TAdminStatus
+  ) => {
+    const previousAdminStatus = submission.adminStatus;
+    setUpdatingStatusId(submission.id);
+    setSubmissions(prev =>
+      prev.map(s => (s.id === submission.id ? { ...s, adminStatus } : s))
+    );
+
+    const result = await updateRecruitmentAdminStatus(
+      submission.id,
+      adminStatus
+    );
+    if (!result.ok) {
+      setSubmissions(prev =>
+        prev.map(s =>
+          s.id === submission.id
+            ? { ...s, adminStatus: previousAdminStatus }
+            : s
+        )
+      );
+      toast.error(result.error);
+    } else {
+      toast.success(t.recruitmentsList.statusUpdated);
+    }
+    setUpdatingStatusId(null);
+  };
+
   const columns = createRecruitmentsColumns({
     t,
+    role: currentUserRole,
     onDelete: setDeleting,
     onDownload: handleDownload,
     downloadingId,
     onStatusChange: handleStatusChange,
+    onAdminStatusChange: handleAdminStatusChange,
     updatingStatusId,
   });
 

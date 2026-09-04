@@ -184,6 +184,7 @@ export const vi = {
       position: "Vị trí ứng tuyển",
       manager: "Quản lý",
       status: "Trạng thái",
+      adminStatus: "Tình trạng ứng viên",
       submittedAt: "Ngày nộp",
     },
     actions: "Thao tác",
@@ -209,6 +210,11 @@ export const vi = {
     adStatusLabels: {
       agreed: "AD đã quản lý",
       rejected: "AD Không Đồng ý",
+    },
+    adminStatusLabels: {
+      new: "Mới",
+      admin_agreed: "Admin Đồng Ý",
+      admin_rejected: "Admin Không Đồng Ý",
     },
   },
   recruitmentDetailView: {

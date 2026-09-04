@@ -16,6 +16,8 @@ import type { Language } from "@/types/preferences/language";
 const COLLECTION = "recruitment_submissions";
 const STATUS_VALUES = ["new", "agreed", "rejected", "needs_documents"] as const;
 export type TRecruitmentStatus = (typeof STATUS_VALUES)[number];
+const ADMIN_STATUS_VALUES = ["new", "admin_agreed", "admin_rejected"] as const;
+export type TAdminStatus = (typeof ADMIN_STATUS_VALUES)[number];
 const SIGNED_URL_TTL_MS = 15 * 60 * 1000;
 
 export type TRecruitmentSubmission = RecruitmentValues & {
@@ -23,6 +25,7 @@ export type TRecruitmentSubmission = RecruitmentValues & {
   submittedAt: string;
   status: TRecruitmentStatus;
   statusUpdatedByRole?: Role;
+  adminStatus?: TAdminStatus;
 };
 
 async function requireRecruitmentAccess() {
@@ -285,6 +288,30 @@ export async function updateRecruitmentSubmissionStatus(
       }
     }
     await ref.update({ status, statusUpdatedByRole: user.role });
+    return { ok: true, data: null };
+  } catch {
+    return { ok: false, error: dict.errors.recruitment.statusUpdateFailed };
+  }
+}
+
+export async function updateRecruitmentAdminStatus(
+  id: string,
+  status: string
+): Promise<ActionResult> {
+  const dict = await getDictionary();
+  const user = await getSessionUser();
+  if (!user) return { ok: false, error: dict.errors.notAuthenticated };
+  if (user.role !== "admin") {
+    return { ok: false, error: dict.errors.forbidden };
+  }
+  if (!ADMIN_STATUS_VALUES.includes(status as TAdminStatus)) {
+    return { ok: false, error: dict.errors.recruitment.invalidStatus };
+  }
+
+  try {
+    await adminDb.collection(COLLECTION).doc(id).update({
+      adminStatus: status,
+    });
     return { ok: true, data: null };
   } catch {
     return { ok: false, error: dict.errors.recruitment.statusUpdateFailed };

@@ -186,6 +186,7 @@ export const en: typeof vi = {
       position: "Position applied",
       manager: "Manager",
       status: "Status",
+      adminStatus: "Applicant status",
       submittedAt: "Submitted",
     },
     actions: "Actions",
@@ -211,6 +212,11 @@ export const en: typeof vi = {
     adStatusLabels: {
       agreed: "AD handled",
       rejected: "AD not agreed",
+    },
+    adminStatusLabels: {
+      new: "New",
+      admin_agreed: "Admin Agreed",
+      admin_rejected: "Admin Rejected",
     },
   },
   recruitmentDetailView: {
