@@ -7,6 +7,8 @@ import { isRole, type Role } from "@/lib/permissions";
 import { ActionResult } from "@/lib/types";
 
 const COLLECTION = "users";
+const STRONG_PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
 export type TAppUser = {
   uid: string;
@@ -95,7 +97,7 @@ export async function createUser(input: {
   if (!isRole(input.role)) {
     return { ok: false, error: dict.errors.users.invalidRole };
   }
-  if (input.password.length < 8) {
+  if (!STRONG_PASSWORD_REGEX.test(input.password)) {
     return { ok: false, error: dict.errors.users.passwordTooShort };
   }
 
@@ -135,7 +137,7 @@ export async function createUser(input: {
 
 export async function updateUser(
   uid: string,
-  input: { name: string; role: string }
+  input: { name: string; role: string; password?: string }
 ): Promise<ActionResult> {
   const check = await requireAdmin();
   if (!check.ok) return check;
@@ -144,13 +146,19 @@ export async function updateUser(
   if (!isRole(input.role)) {
     return { ok: false, error: dict.errors.users.invalidRole };
   }
+  if (input.password && !STRONG_PASSWORD_REGEX.test(input.password)) {
+    return { ok: false, error: dict.errors.users.passwordTooShort };
+  }
 
   try {
     await adminDb.collection(COLLECTION).doc(uid).update({
       name: input.name,
       role: input.role,
     });
-    await adminAuth.updateUser(uid, { displayName: input.name });
+    await adminAuth.updateUser(uid, {
+      displayName: input.name,
+      ...(input.password ? { password: input.password } : {}),
+    });
 
     return { ok: true, data: null };
   } catch {

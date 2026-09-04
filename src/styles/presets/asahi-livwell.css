@@ -54,8 +54,8 @@ Colors sourced from https://home.asahilivwell.com/ (brand navy #002364, accent p
     --card-foreground: oklch(0.985 0.000 89.9);
     --popover: oklch(0.271 0.090 260.4);
     --popover-foreground: oklch(0.985 0.000 89.9);
-    --primary: oklch(0.610 0.211 261.3);
-    --primary-foreground: oklch(0.214 0.084 259.3);
+    --primary: oklch(0.283 0.121 260.9);
+    --primary-foreground: oklch(1.000 0.000 89.9);
     --secondary: oklch(0.303 0.090 261.0);
     --secondary-foreground: oklch(0.985 0.000 89.9);
     --muted: oklch(0.303 0.090 261.0);

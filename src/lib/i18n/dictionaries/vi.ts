@@ -139,6 +139,17 @@ export const vi = {
       createDescription: "Tạo tài khoản đăng nhập mới cho hệ thống.",
       email: "Email",
       password: "Mật khẩu",
+      newPasswordLabel: "Mật khẩu mới",
+      newPasswordDescription:
+        "Để trống nếu không muốn thay đổi mật khẩu hiện tại.",
+      passwordRequirements:
+        "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+      showPasswordSr: "Hiện mật khẩu",
+      hidePasswordSr: "Ẩn mật khẩu",
+      generatePasswordSr: "Tạo mật khẩu tự động",
+      copyPasswordSr: "Sao chép mật khẩu",
+      passwordCopied: "Đã sao chép mật khẩu",
+      passwordCopyFailed: "Không thể sao chép mật khẩu.",
       name: "Họ và tên",
       role: "Vai trò",
       rolePlaceholder: "Chọn vai trò",
@@ -561,7 +572,8 @@ export const vi = {
       listFailed: "Không thể tải danh sách người dùng.",
       managerListFailed: "Không thể tải danh sách quản lý.",
       invalidRole: "Vai trò không hợp lệ.",
-      passwordTooShort: "Mật khẩu phải có ít nhất 8 ký tự.",
+      passwordTooShort:
+        "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
       emailInUse: "Email này đã được sử dụng.",
       createFailed: "Không thể tạo người dùng.",
       updateFailed: "Không thể cập nhật người dùng.",

@@ -55,6 +55,7 @@ export function UsersView({ initialUsers }: { initialUsers: TAppUser[] }) {
         const result = await updateUser(editingUser.uid, {
           name: values.name,
           role: values.role,
+          password: values.password ? values.password : undefined,
         });
         if (!result.ok) {
           toast.error(result.error);
