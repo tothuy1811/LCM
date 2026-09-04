@@ -20,6 +20,14 @@ import {
 // site-wide language preference used by the authenticated admin/AD pages.
 const t = vi;
 
+function todayIso(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function RecruitmentForm({ managers }: { managers: TManagerOption[] }) {
   const [submitted, setSubmitted] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -39,7 +47,7 @@ export function RecruitmentForm({ managers }: { managers: TManagerOption[] }) {
     defaultValues: {
       dateOfBirth: "",
       idIssueDate: "",
-      signDate: "",
+      signDate: todayIso(),
       managerUid: "",
       managerName: "",
       bankName: "",

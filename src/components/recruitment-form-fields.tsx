@@ -504,7 +504,12 @@ export function RecruitmentFormFields({
   } = useFieldArray({ control, name: "familyMembers" });
 
   const channel = watch("channel");
+  const agencyType = watch("agencyType");
   const positionApplied = watch("positionApplied");
+  const VISIBLE_POSITION_OPTIONS =
+    channel === "agency" && agencyType === "part_time"
+      ? POSITION_OPTIONS.filter(opt => opt.value === "agent")
+      : POSITION_OPTIONS;
   const educationLevel = watch("educationLevel");
   const isCivilServant = watch("isCivilServant");
   const civilServantType = watch("civilServantType");
@@ -531,6 +536,16 @@ export function RecruitmentFormFields({
   useEffect(() => {
     setValue("accountHolderName", fullName);
   }, [fullName, setValue]);
+
+  useEffect(() => {
+    if (
+      channel === "agency" &&
+      agencyType === "part_time" &&
+      positionApplied !== "agent"
+    ) {
+      setValue("positionApplied", "agent");
+    }
+  }, [channel, agencyType, positionApplied, setValue]);
 
   const handleFilesSelected = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -1330,7 +1345,7 @@ export function RecruitmentFormFields({
                   onValueChange={field.onChange}
                   className="grid gap-3 sm:grid-cols-2"
                 >
-                  {POSITION_OPTIONS.map(opt => (
+                  {VISIBLE_POSITION_OPTIONS.map(opt => (
                     <div key={opt.value} className="flex items-center gap-2">
                       <RadioGroupItem
                         value={opt.value}
