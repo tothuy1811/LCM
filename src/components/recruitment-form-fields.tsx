@@ -468,12 +468,10 @@ export function RecruitmentFormFields({
       value: "young_children",
       label: t.recruitmentForm.options.q3.young_children,
     },
-    { value: "debt_loan", label: t.recruitmentForm.options.q3.debt_loan },
     {
       value: "retirement_age",
       label: t.recruitmentForm.options.q3.retirement_age,
     },
-    { value: "everyone", label: t.recruitmentForm.options.q3.everyone },
     { value: "other", label: t.recruitmentForm.options.q3.other },
   ] as const;
 

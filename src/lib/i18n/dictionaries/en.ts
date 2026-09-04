@@ -449,7 +449,7 @@ export const en: typeof vi = {
       organization: "Organization *",
     },
     section8: {
-      title: "Next of kin",
+      title: "Next of kin *",
       memberHeading: (n: number) => `Family member ${n}`,
       name: "Full name",
       birthYear: "Year of birth",

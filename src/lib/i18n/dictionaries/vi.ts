@@ -231,7 +231,7 @@ export const vi = {
         ads: "Quảng cáo",
         fanpage: "Fanpage",
         website: "Website tuyển dụng",
-        friend_colleague_referral: "Bạn bè/ Đồng Nghiệp/ Giới Thiệu",
+        friend_colleague_referral: "Bạn bè/ Đồng nghiệp giới thiệu",
         other: "Khác",
       },
       agencyType: {
@@ -306,7 +306,7 @@ export const vi = {
           "Là công cụ bảo vệ tài chính cần thiết cho gia đình",
         savings_investment: "Là một hình thức tiết kiệm, đầu tư dài hạn",
         important_not_explored:
-          "Là khoản dự phòng, khoản thu nhập thay thế khi mất khả năng tạo ra thu nhập",
+          "Là khoản dự phòng thay thế thu nhập khi mất khả năng lao động",
         other: "Khác",
       },
       q3: {
@@ -447,7 +447,7 @@ export const vi = {
       organization: "Đơn vị công tác *",
     },
     section8: {
-      title: "Quan hệ nhân thân",
+      title: "Quan hệ nhân thân *",
       memberHeading: (n: number) => `Thân nhân ${n}`,
       name: "Họ tên",
       birthYear: "Năm sinh",
