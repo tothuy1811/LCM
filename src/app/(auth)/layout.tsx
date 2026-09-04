@@ -20,7 +20,7 @@ export default async function AuthLayout({
         <div className="relative flex h-full flex-col justify-between p-10 text-white">
           <Image
             src="/brand/logo/ASAHI_HORIZONTAL_VECTOR.svg"
-            alt="Asahi Livwell"
+            alt="Asahi Life"
             width={124}
             height={51}
             className="mr-auto h-10 w-auto self-start"
@@ -57,7 +57,7 @@ export default async function AuthLayout({
         <div className="absolute inset-0 bg-[oklch(0.283_0.121_260.9)]/55 lg:hidden" />
         <Image
           src="/brand/logo/ASAHI_HORIZONTAL_VECTOR.svg"
-          alt="Asahi Livwell"
+          alt="Asahi Life"
           width={124}
           height={51}
           className="absolute top-6 left-6 h-9 w-auto lg:hidden"

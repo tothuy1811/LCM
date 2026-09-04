@@ -1,8 +1,8 @@
 export const vi = {
   metadata: {
-    titleDefault: "Asahi Livwell",
-    titleTemplate: "Asahi Livwell - %s",
-    description: "Compensation Asahi Livwell",
+    titleDefault: "Asahi Life",
+    titleTemplate: "Asahi Life - %s",
+    description: "Compensation Asahi Life",
   },
   common: {
     cancel: "Hủy",
@@ -92,7 +92,7 @@ export const vi = {
       hero: {
         heading: "TRANG QUẢN LÝ THÔNG TIN\nTUYỂN DỤNG",
         subtitle:
-          "Đăng nhập để quản lý lương thưởng và phúc lợi cho đội ngũ Asahi Livwell.",
+          "Đăng nhập để quản lý lương thưởng và phúc lợi cho đội ngũ Asahi Life.",
         quote: '"Hành trình vạn dặm bắt đầu từ một bước chân." — Lão Tử',
       },
     },
@@ -109,7 +109,7 @@ export const vi = {
     recruitmentDetail: { title: "Chi tiết ứng viên" },
     recruitmentPublic: {
       title: "Phiếu thông tin tuyển dụng",
-      logoAlt: "Asahi Livwell",
+      logoAlt: "Asahi Life",
       heading: "Phiếu thông tin tuyển dụng",
       subtitle:
         "Vui lòng điền đầy đủ và chính xác thông tin bên dưới. Các trường có dấu * là bắt buộc.",
@@ -215,7 +215,7 @@ export const vi = {
   recruitmentForm: {
     thankYouTitle: "Cảm ơn bạn!",
     thankYouBody:
-      "Thông tin ứng tuyển của bạn đã được gửi thành công. Đội ngũ tuyển dụng Asahi Livwell sẽ liên hệ với bạn trong thời gian sớm nhất.",
+      "Thông tin ứng tuyển của bạn đã được gửi thành công. Đội ngũ tuyển dụng Asahi Life sẽ liên hệ với bạn trong thời gian sớm nhất.",
     submitting: "Đang gửi...",
     submit: "Gửi phiếu thông tin",
     maxFilesError: (n: number) => `Tối đa ${n} tệp.`,
@@ -468,7 +468,7 @@ export const vi = {
       q5Label:
         "5) Anh chị Cam Kết tham gia các khóa học-Đào tạo nào dưới đây? *",
       q6Label:
-        "6) Anh/chị mong Asahi hỗ trợ gì để thành công? (có thể chọn nhiều đáp án)",
+        "6) Anh/chị mong Asahi Life hỗ trợ gì để thành công? (có thể chọn nhiều đáp án)",
       selectPlaceholder: "Chọn một đáp án",
       specifyOther: "Vui lòng ghi rõ",
       no: "Không",
@@ -488,7 +488,7 @@ export const vi = {
     section11: {
       title: "Cam kết của ứng viên",
       voluntary:
-        "Tôi xác nhận việc tìm hiểu cơ hội nghề nghiệp này và ứng tuyển làm đại lý tại Asahi hoàn toàn là quyết định tự nguyện của cá nhân tôi, không do bất kỳ cá nhân hay tổ chức nào chi phối.",
+        "Tôi xác nhận việc tìm hiểu cơ hội nghề nghiệp này và ứng tuyển làm đại lý tại Asahi Life hoàn toàn là quyết định tự nguyện của cá nhân tôi, không do bất kỳ cá nhân hay tổ chức nào chi phối.",
       dataConsent:
         "Tôi đồng ý cho phép xử lý dữ liệu cá nhân (PDPD) để hệ thống thu thập, lưu trữ và xử lý hồ sơ của tôi.",
       consentLabel: "Xác nhận cam kết & đồng ý PDPD *",

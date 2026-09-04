@@ -2,9 +2,9 @@ import type { vi } from "./vi";
 
 export const en: typeof vi = {
   metadata: {
-    titleDefault: "Asahi Livwell",
-    titleTemplate: "Asahi Livwell - %s",
-    description: "Compensation Asahi Livwell",
+    titleDefault: "Asahi Life",
+    titleTemplate: "Asahi Life - %s",
+    description: "Compensation Asahi Life",
   },
   common: {
     cancel: "Cancel",
@@ -94,7 +94,7 @@ export const en: typeof vi = {
       hero: {
         heading: "RECRUITMENT INFORMATION MANAGEMENT",
         subtitle:
-          "Sign in to manage compensation and benefits for the Asahi Livwell team.",
+          "Sign in to manage compensation and benefits for the Asahi Life team.",
         quote:
           '"A journey of a thousand miles begins with a single step." — Lao Tzu',
       },
@@ -112,7 +112,7 @@ export const en: typeof vi = {
     recruitmentDetail: { title: "Candidate details" },
     recruitmentPublic: {
       title: "Recruitment information form",
-      logoAlt: "Asahi Livwell",
+      logoAlt: "Asahi Life",
       heading: "Recruitment information form",
       subtitle:
         "Please fill in the information below completely and accurately. Fields marked with * are required.",
@@ -218,7 +218,7 @@ export const en: typeof vi = {
   recruitmentForm: {
     thankYouTitle: "Thank you!",
     thankYouBody:
-      "Your application has been submitted successfully. The Asahi Livwell recruitment team will contact you as soon as possible.",
+      "Your application has been submitted successfully. The Asahi Life recruitment team will contact you as soon as possible.",
     submitting: "Submitting...",
     submit: "Submit application",
     maxFilesError: (n: number) => `Maximum ${n} files.`,
@@ -469,7 +469,7 @@ export const en: typeof vi = {
       q5Label:
         "5) Are you willing to take part in the following training courses to develop yourself? *",
       q6Label:
-        "6) What support do you hope Asahi provides so you can succeed, increase your income, have opportunities for advancement, and improve your skills and knowledge? (multiple answers allowed)",
+        "6) What support do you hope Asahi Life provides so you can succeed, increase your income, have opportunities for advancement, and improve your skills and knowledge? (multiple answers allowed)",
       selectPlaceholder: "Select an answer",
       specifyOther: "Please specify",
       no: "No",
@@ -489,7 +489,7 @@ export const en: typeof vi = {
     section11: {
       title: "Candidate commitments",
       voluntary:
-        "I confirm that exploring this career opportunity and applying to become an agent at Asahi is entirely my own voluntary decision, not directed by any other individual or organization.",
+        "I confirm that exploring this career opportunity and applying to become an agent at Asahi Life is entirely my own voluntary decision, not directed by any other individual or organization.",
       dataConsent:
         "I consent to the processing of my personal data (PDPD) so the system can collect, store, and process my application.",
       consentLabel: "Confirm commitment & PDPD consent *",

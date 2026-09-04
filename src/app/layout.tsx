@@ -26,10 +26,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Asahi Livwell",
-    template: "Asahi Livwell - %s",
+    default: "Asahi Life",
+    template: "Asahi Life - %s",
   },
-  description: "Compensation Asahi Livwell",
+  description: "Compensation Asahi Life",
 };
 
 export default async function RootLayout({

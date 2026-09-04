@@ -43,7 +43,7 @@ export function AppSidebar({
                   height={33}
                   className="size-5"
                 />
-                <span className="text-base font-semibold">Asahi Livwell</span>
+                <span className="text-base font-semibold">Asahi Life</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

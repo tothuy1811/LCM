@@ -25,14 +25,17 @@ export default async function RecruitmentPage() {
 
       <main className="relative mx-auto max-w-3xl px-6 pb-10">
         <div className="flex flex-col items-center gap-6 py-16 text-center text-white">
-          <Image
-            src="/brand/logo/ASAHI_HORIZONTAL_VECTOR.svg"
-            alt={dict.pages.recruitmentPublic.logoAlt}
-            width={124}
-            height={51}
-            className="h-9 w-auto"
-            priority
-          />
+          <div className="flex w-full items-center gap-2">
+            <Image
+              src="/brand/logo/ASAHI_SYMBOL.svg"
+              alt={dict.pages.recruitmentPublic.logoAlt}
+              width={39}
+              height={33}
+              className="size-6"
+              priority
+            />
+            <span className="text-lg font-semibold">Asahi Life</span>
+          </div>
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-semibold text-balance sm:text-3xl">
               {dict.pages.recruitmentPublic.heading}

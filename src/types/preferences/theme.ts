@@ -49,7 +49,7 @@ export const THEME_PRESET_OPTIONS = [
     },
   },
   {
-    label: "Asahi Livwell",
+    label: "Asahi Life",
     value: "asahi-livwell",
     primary: {
       light: "oklch(0.283 0.121 260.9)",
