@@ -1,15 +1,10 @@
 "use client";
 import * as React from "react";
 
-import {
-  ChartBar,
-  Forklift,
-  Gauge,
-  GraduationCap,
-  LayoutDashboard,
-  Search,
-  ShoppingBag,
-} from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { IconLoader2 } from "@tabler/icons-react";
+import { Search, Settings, UserCheck, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,55 +18,77 @@ import {
 } from "@/components/ui/command";
 import { useDictionary } from "@/hooks/use-dictionary";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import {
+  canAccessSettings,
+  canAccessUsers,
+  type Role,
+} from "@/lib/permissions";
+import {
+  listRecruitmentSubmissions,
+  type TRecruitmentSubmission,
+} from "@/server/recruitment-actions";
+import { listUsers, type TAppUser } from "@/server/user-actions";
 
-function getSearchItems(t: Dictionary) {
-  return [
+function getNavigationItems(t: Dictionary, role: Role) {
+  const items = [
     {
-      group: t.searchDialog.dashboardGroup,
-      icon: LayoutDashboard,
-      label: t.searchDialog.default,
+      icon: UserCheck,
+      label: t.nav.recruitments,
+      url: "/recruitments",
     },
-    {
-      group: t.searchDialog.dashboardGroup,
-      icon: ChartBar,
-      label: t.searchDialog.crm,
-      disabled: true,
-    },
-    {
-      group: t.searchDialog.dashboardGroup,
-      icon: Gauge,
-      label: t.searchDialog.analytics,
-      disabled: true,
-    },
-    {
-      group: t.searchDialog.dashboardGroup,
-      icon: ShoppingBag,
-      label: t.searchDialog.ecommerce,
-      disabled: true,
-    },
-    {
-      group: t.searchDialog.dashboardGroup,
-      icon: GraduationCap,
-      label: t.searchDialog.academy,
-      disabled: true,
-    },
-    {
-      group: t.searchDialog.dashboardGroup,
-      icon: Forklift,
-      label: t.searchDialog.logistics,
-      disabled: true,
-    },
-    { group: t.searchDialog.authGroup, label: t.searchDialog.loginV1 },
-    { group: t.searchDialog.authGroup, label: t.searchDialog.loginV2 },
-    { group: t.searchDialog.authGroup, label: t.searchDialog.signupV1 },
-    { group: t.searchDialog.authGroup, label: t.searchDialog.signupV2 },
   ];
+
+  if (canAccessUsers(role)) {
+    items.push({
+      icon: Users,
+      label: t.nav.users,
+      url: "/users",
+    });
+  }
+
+  if (canAccessSettings(role)) {
+    items.push({
+      icon: Settings,
+      label: t.nav.settings,
+      url: "/settings",
+    });
+  }
+
+  return items;
 }
 
-export function SearchDialog() {
+export function SearchDialog({ role }: { role: Role }) {
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [submissions, setSubmissions] = React.useState<
+    TRecruitmentSubmission[]
+  >([]);
+  const [users, setUsers] = React.useState<TAppUser[]>([]);
   const t = useDictionary();
-  const searchItems = getSearchItems(t);
+  const router = useRouter();
+  const navigationItems = getNavigationItems(t, role);
+  const showUsers = canAccessUsers(role);
+
+  React.useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+
+    (async () => {
+      setLoading(true);
+      const [submissionsResult, usersResult] = await Promise.all([
+        listRecruitmentSubmissions(),
+        showUsers ? listUsers() : Promise.resolve(null),
+      ]);
+      if (cancelled) return;
+      setSubmissions(submissionsResult.ok ? submissionsResult.data : []);
+      setUsers(usersResult?.ok ? usersResult.data : []);
+      setLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, showUsers]);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -83,6 +100,11 @@ export function SearchDialog() {
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, []);
+
+  const handleNavigate = (url: string) => {
+    setOpen(false);
+    router.push(url);
+  };
 
   return (
     <>
@@ -100,26 +122,77 @@ export function SearchDialog() {
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder={t.searchDialog.placeholder} />
         <CommandList>
-          <CommandEmpty>{t.searchDialog.empty}</CommandEmpty>
-          {[...new Set(searchItems.map(item => item.group))].map((group, i) => (
-            <React.Fragment key={group}>
-              {i !== 0 && <CommandSeparator />}
-              <CommandGroup heading={group} key={group}>
-                {searchItems
-                  .filter(item => item.group === group)
-                  .map(item => (
-                    <CommandItem
-                      className="!py-1.5"
-                      key={item.label}
-                      onSelect={() => setOpen(false)}
-                    >
-                      {item.icon && <item.icon />}
-                      <span>{item.label}</span>
-                    </CommandItem>
-                  ))}
+          {!loading && <CommandEmpty>{t.searchDialog.empty}</CommandEmpty>}
+          <CommandGroup heading={t.searchDialog.navigationGroup}>
+            {navigationItems.map(item => (
+              <CommandItem
+                className="!py-1.5"
+                key={item.url}
+                value={item.label}
+                onSelect={() => handleNavigate(item.url)}
+              >
+                <item.icon />
+                <span>{item.label}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+
+          {submissions.length > 0 && (
+            <>
+              <CommandSeparator />
+              <CommandGroup heading={t.searchDialog.recruitmentsGroup}>
+                {submissions.map(submission => (
+                  <CommandItem
+                    className="!py-1.5"
+                    key={submission.id}
+                    value={`${submission.fullName} ${submission.mobile1} ${submission.email}`}
+                    onSelect={() =>
+                      handleNavigate(`/recruitments/${submission.id}`)
+                    }
+                  >
+                    <UserCheck />
+                    <div className="flex flex-col">
+                      <span>{submission.fullName}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {submission.mobile1} · {submission.email}
+                      </span>
+                    </div>
+                  </CommandItem>
+                ))}
               </CommandGroup>
-            </React.Fragment>
-          ))}
+            </>
+          )}
+
+          {users.length > 0 && (
+            <>
+              <CommandSeparator />
+              <CommandGroup heading={t.searchDialog.usersGroup}>
+                {users.map(user => (
+                  <CommandItem
+                    className="!py-1.5"
+                    key={user.uid}
+                    value={`${user.name} ${user.email}`}
+                    onSelect={() => handleNavigate("/users")}
+                  >
+                    <Users />
+                    <div className="flex flex-col">
+                      <span>{user.name}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {user.email}
+                      </span>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </>
+          )}
+
+          {loading && (
+            <div className="text-muted-foreground flex items-center justify-center gap-2 py-6 text-sm">
+              <IconLoader2 className="size-4 animate-spin" />
+              {t.searchDialog.loading}
+            </div>
+          )}
         </CommandList>
       </CommandDialog>
     </>
