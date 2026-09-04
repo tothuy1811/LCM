@@ -27,7 +27,10 @@ export default async function RecruitmentsPage() {
       <h1 className="text-2xl font-semibold">
         {dict.pages.recruitments.heading}
       </h1>
-      <RecruitmentsView initialSubmissions={submissions} />
+      <RecruitmentsView
+        initialSubmissions={submissions}
+        currentUserRole={sessionUser.role}
+      />
     </div>
   );
 }

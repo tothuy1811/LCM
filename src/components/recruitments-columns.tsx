@@ -3,42 +3,74 @@
 import Link from "next/link";
 
 import {
+  IconCheck,
+  IconDotsVertical,
   IconDownload,
   IconEye,
+  IconFileText,
   IconLoader2,
   IconTrash,
+  IconX,
 } from "@tabler/icons-react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { formatDate } from "@/lib/utils";
-import type { TRecruitmentSubmission } from "@/server/recruitment-actions";
+import type {
+  TRecruitmentStatus,
+  TRecruitmentSubmission,
+} from "@/server/recruitment-actions";
 
-const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive"> =
-  {
-    new: "secondary",
-    contacted: "default",
-    hired: "default",
-    rejected: "destructive",
-  };
+const STATUS_VARIANTS: Record<
+  string,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
+  new: "secondary",
+  agreed: "default",
+  rejected: "destructive",
+  needs_documents: "outline",
+};
+
+const STATUS_TRANSITIONS: Record<TRecruitmentStatus, TRecruitmentStatus[]> = {
+  new: ["agreed", "rejected", "needs_documents"],
+  needs_documents: ["agreed", "rejected"],
+  agreed: ["rejected", "needs_documents"],
+  rejected: ["agreed", "needs_documents"],
+};
+
+const STATUS_ICONS: Record<TRecruitmentStatus, typeof IconCheck> = {
+  new: IconCheck,
+  agreed: IconCheck,
+  rejected: IconX,
+  needs_documents: IconFileText,
+};
 
 export function createRecruitmentsColumns({
   t,
   onDelete,
   onDownload,
   downloadingId,
+  onStatusChange,
+  updatingStatusId,
 }: {
   t: Dictionary;
   onDelete: (submission: TRecruitmentSubmission) => void;
   onDownload: (submission: TRecruitmentSubmission) => void;
   downloadingId: string | null;
+  onStatusChange: (
+    submission: TRecruitmentSubmission,
+    status: TRecruitmentStatus
+  ) => void;
+  updatingStatusId: string | null;
 }): ColumnDef<TRecruitmentSubmission & { id: string }>[] {
   return [
     {
@@ -67,11 +99,19 @@ export function createRecruitmentsColumns({
     {
       accessorKey: "status",
       header: t.recruitmentsList.columns.status,
-      cell: ({ row }) => (
-        <Badge variant={STATUS_VARIANTS[row.original.status]}>
-          {t.recruitmentsList.statusLabels[row.original.status]}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const { status, statusUpdatedByRole } = row.original;
+        const adLabel =
+          statusUpdatedByRole === "ad" &&
+          (status === "agreed" || status === "rejected")
+            ? t.recruitmentsList.adStatusLabels[status]
+            : undefined;
+        return (
+          <Badge variant={STATUS_VARIANTS[status]}>
+            {adLabel ?? t.recruitmentsList.statusLabels[status] ?? status}
+          </Badge>
+        );
+      },
     },
     {
       accessorKey: "submittedAt",
@@ -81,52 +121,65 @@ export function createRecruitmentsColumns({
     {
       id: "actions",
       header: "",
-      cell: ({ row }) => (
-        <div className="flex justify-end gap-1">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon-sm" asChild>
-                <Link href={`/recruitments/${row.original.id}`}>
-                  <IconEye className="size-4" />
-                  <span className="sr-only">{t.recruitmentsList.viewSr}</span>
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t.recruitmentsList.viewSr}</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                disabled={downloadingId === row.original.id}
-                onClick={() => onDownload(row.original)}
-              >
-                {downloadingId === row.original.id ? (
-                  <IconLoader2 className="size-4 animate-spin" />
-                ) : (
+      cell: ({ row }) => {
+        const isUpdatingStatus = updatingStatusId === row.original.id;
+        const isDownloading = downloadingId === row.original.id;
+        const transitions = STATUS_TRANSITIONS[row.original.status] ?? [];
+        return (
+          <div className="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  disabled={isUpdatingStatus || isDownloading}
+                >
+                  {isUpdatingStatus || isDownloading ? (
+                    <IconLoader2 className="size-4 animate-spin" />
+                  ) : (
+                    <IconDotsVertical className="size-4" />
+                  )}
+                  <span className="sr-only">{t.recruitmentsList.actions}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={`/recruitments/${row.original.id}`}>
+                    <IconEye className="size-4" />
+                    {t.recruitmentsList.viewSr}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => onDownload(row.original)}>
                   <IconDownload className="size-4" />
-                )}
-                <span className="sr-only">{t.recruitmentsList.downloadSr}</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t.recruitmentsList.downloadSr}</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => onDelete(row.original)}
-              >
-                <IconTrash className="size-4" />
-                <span className="sr-only">{t.recruitmentsList.deleteSr}</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t.recruitmentsList.deleteSr}</TooltipContent>
-          </Tooltip>
-        </div>
-      ),
+                  {t.recruitmentsList.downloadSr}
+                </DropdownMenuItem>
+                {transitions.length > 0 && <DropdownMenuSeparator />}
+                {transitions.map(target => {
+                  const Icon = STATUS_ICONS[target];
+                  const label = t.recruitmentsList.statusLabels[target];
+                  return (
+                    <DropdownMenuItem
+                      key={target}
+                      onSelect={() => onStatusChange(row.original, target)}
+                    >
+                      <Icon className="size-4" />
+                      {label}
+                    </DropdownMenuItem>
+                  );
+                })}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onSelect={() => onDelete(row.original)}
+                >
+                  <IconTrash className="size-4" />
+                  {t.recruitmentsList.deleteSr}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      },
       enableSorting: false,
       enableHiding: false,
     },

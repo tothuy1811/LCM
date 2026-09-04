@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 import { adminDb, adminStorage } from "@/lib/firebase/admin";
 import { getSessionUser } from "@/lib/firebase/session";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { canAccessRecruitments } from "@/lib/permissions";
+import { canAccessRecruitments, type Role } from "@/lib/permissions";
 import { ActionResult } from "@/lib/types";
 import {
   buildRecruitmentSchema,
@@ -14,7 +14,7 @@ import {
 import type { Language } from "@/types/preferences/language";
 
 const COLLECTION = "recruitment_submissions";
-const STATUS_VALUES = ["new", "contacted", "hired", "rejected"] as const;
+const STATUS_VALUES = ["new", "agreed", "rejected", "needs_documents"] as const;
 export type TRecruitmentStatus = (typeof STATUS_VALUES)[number];
 const SIGNED_URL_TTL_MS = 15 * 60 * 1000;
 
@@ -22,6 +22,7 @@ export type TRecruitmentSubmission = RecruitmentValues & {
   id: string;
   submittedAt: string;
   status: TRecruitmentStatus;
+  statusUpdatedByRole?: Role;
 };
 
 async function requireRecruitmentAccess() {
@@ -283,7 +284,7 @@ export async function updateRecruitmentSubmissionStatus(
         return { ok: false, error: dict.errors.forbidden };
       }
     }
-    await ref.update({ status });
+    await ref.update({ status, statusUpdatedByRole: user.role });
     return { ok: true, data: null };
   } catch {
     return { ok: false, error: dict.errors.recruitment.statusUpdateFailed };

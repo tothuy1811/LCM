@@ -19,20 +19,26 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { createRecruitmentsColumns } from "@/components/recruitments-columns";
 import { useDictionary } from "@/hooks/use-dictionary";
+import type { Role } from "@/lib/permissions";
 import {
   deleteRecruitmentSubmission,
+  updateRecruitmentSubmissionStatus,
+  type TRecruitmentStatus,
   type TRecruitmentSubmission,
 } from "@/server/recruitment-actions";
 
 export function RecruitmentsView({
   initialSubmissions,
+  currentUserRole,
 }: {
   initialSubmissions: TRecruitmentSubmission[];
+  currentUserRole: Role;
 }) {
   const t = useDictionary();
   const [submissions, setSubmissions] = useState(initialSubmissions);
   const [deleting, setDeleting] = useState<TRecruitmentSubmission | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
   const [selectedSubmissions, setSelectedSubmissions] = useState<
     TRecruitmentSubmission[]
   >([]);
@@ -99,11 +105,51 @@ export function RecruitmentsView({
     }
   };
 
+  const handleStatusChange = async (
+    submission: TRecruitmentSubmission,
+    status: TRecruitmentStatus
+  ) => {
+    const previousStatus = submission.status;
+    const previousStatusUpdatedByRole = submission.statusUpdatedByRole;
+    setUpdatingStatusId(submission.id);
+    setSubmissions(prev =>
+      prev.map(s =>
+        s.id === submission.id
+          ? { ...s, status, statusUpdatedByRole: currentUserRole }
+          : s
+      )
+    );
+
+    const result = await updateRecruitmentSubmissionStatus(
+      submission.id,
+      status
+    );
+    if (!result.ok) {
+      setSubmissions(prev =>
+        prev.map(s =>
+          s.id === submission.id
+            ? {
+                ...s,
+                status: previousStatus,
+                statusUpdatedByRole: previousStatusUpdatedByRole,
+              }
+            : s
+        )
+      );
+      toast.error(result.error);
+    } else {
+      toast.success(t.recruitmentsList.statusUpdated);
+    }
+    setUpdatingStatusId(null);
+  };
+
   const columns = createRecruitmentsColumns({
     t,
     onDelete: setDeleting,
     onDownload: handleDownload,
     downloadingId,
+    onStatusChange: handleStatusChange,
+    updatingStatusId,
   });
 
   return (

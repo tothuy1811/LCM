@@ -68,7 +68,12 @@ export function buildAnswerBlocks(
       columns: [
         {
           label: dict.recruitmentsList.columns.status,
-          getValue: s => dict.recruitmentsList.statusLabels[s.status],
+          getValue: s =>
+            (s.statusUpdatedByRole === "ad" &&
+              (s.status === "agreed" || s.status === "rejected") &&
+              dict.recruitmentsList.adStatusLabels[s.status]) ||
+            dict.recruitmentsList.statusLabels[s.status] ||
+            s.status,
         },
         {
           label: dict.recruitmentDetailView.submittedAt,

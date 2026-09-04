@@ -186,11 +186,13 @@ export const en: typeof vi = {
       status: "Status",
       submittedAt: "Submitted",
     },
+    actions: "Actions",
     viewSr: "View details",
     deleteSr: "Delete",
     downloadSr: "Download submission",
     downloading: "Preparing the download...",
     exportSelected: (count: number) => `Download selected (${count})`,
+    statusUpdated: "Status updated",
     positionLabels: {
       agent: "Life Planner (Agent)",
       unit_manager: "Unit Manager (UM)",
@@ -200,9 +202,13 @@ export const en: typeof vi = {
     },
     statusLabels: {
       new: "New",
-      contacted: "Contacted",
-      hired: "Hired",
-      rejected: "Rejected",
+      agreed: "Agreed",
+      rejected: "Not Agreed",
+      needs_documents: "Additional Documents Required",
+    },
+    adStatusLabels: {
+      agreed: "AD handled",
+      rejected: "AD not agreed",
     },
   },
   recruitmentDetailView: {

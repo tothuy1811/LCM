@@ -183,11 +183,13 @@ export const vi = {
       status: "Trạng thái",
       submittedAt: "Ngày nộp",
     },
+    actions: "Thao tác",
     viewSr: "Xem chi tiết",
     deleteSr: "Xóa",
     downloadSr: "Tải xuống hồ sơ",
     downloading: "Đang chuẩn bị tệp tải xuống...",
     exportSelected: (count: number) => `Tải xuống đã chọn (${count})`,
+    statusUpdated: "Đã cập nhật trạng thái",
     positionLabels: {
       agent: "Life Planner (Agent)",
       unit_manager: "Unit Manager (UM)",
@@ -197,9 +199,13 @@ export const vi = {
     },
     statusLabels: {
       new: "Mới",
-      contacted: "Đã liên hệ",
-      hired: "Đã tuyển",
-      rejected: "Từ chối",
+      agreed: "Đồng ý",
+      rejected: "Không Đồng Ý",
+      needs_documents: "Bổ sung chứng từ",
+    },
+    adStatusLabels: {
+      agreed: "AD đã quản lý",
+      rejected: "AD Không Đồng ý",
     },
   },
   recruitmentDetailView: {
